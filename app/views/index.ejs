@@ -75,7 +75,19 @@
                         html = '';
                         for(var i = 0; i < arrayHorarios.length; i++ ){
 
+                            console.log('antes: '); console.log(arrayHorarios[i].horario);
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
+                            console.log('transformado em date: '); console.log(arrayHorarios[i].horario);
+                            var offset = arrayHorarios[i].horario.getTimezoneOffset();
+                            console.log('offset: '); console.log(offset);
+                            console.log('date sem offset: '); console.log(arrayHorarios[i].horario.getTime());
+                            arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
+                            console.log('date + offset: '); console.log(arrayHorarios[i].horario);
+                            arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
+                            console.log('date + offset em date: '); console.log(arrayHorarios[i].horario);
+                            //arrayHorarios[i].horario = new Date(arrayHorarios[i].horario.getTime() + offset);
+                            //alert('depois:');
+                            //alert(arrayHorarios[i].horario);
 
                             if(arrayHorarios[i].tipo == 'Extra') {
                                 html += '<tr class="info">';

@@ -45,6 +45,7 @@ module.exports.horario_pesquisar = function(application, req, res){
 
                     var plataformasLivres = getPlataformas(resultArrayPlataformas);
 
+                    // retirar plataformas ocupadas do array das plataformas livres
                     for(var i = 0; i < plataformasOcupadas.length; i++){
                         plataformasLivres.splice( plataformasLivres.indexOf(plataformasOcupadas[i]) , 1);
                     }

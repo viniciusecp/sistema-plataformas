@@ -33,6 +33,7 @@ module.exports.horario_salvar = function(application, req, res){
     if (dadosForm.tipo == 'Normal') {
         req.assert('qnt_insercoes', 'Número de inserções é obrigatório').notEmpty();
     }
+    req.assert('horario', 'Horário é obrigatório').notEmpty();
     req.assert('plataforma', 'Plataforma é obrigatório').notEmpty();
 
     var erros = req.validationErrors();

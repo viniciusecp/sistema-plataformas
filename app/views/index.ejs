@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Bootstrap JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <link rel="shortcut icon" href="images/favicon-icon.png" />
+
+    <title>Sistema Plataformas</title>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#btn_pesquisar').click(function(){
+                var horario = $('#horario').val();
+                var plataforma = $('#plataforma').val();
+
+                $.ajax({
+                    url: '/horario/pesquisar',
+                    method: 'post',
+                    data: {
+                        horario: horario,
+                        plataforma: plataforma
+                    },
+                    success: function(data){
+                        //alert("requisiçao completada com sucesso");
+                        //$('#corpo_tabela').html(JSON.stringify(data));
+
+                        if (data == 'error') {
+                            var html = '';
+                            html += '<br/>';
+                            html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                                html += '<strong>Atenção!</strong> Você esqueceu de informar algum valor!';
+                            html += '</div>';
+
+                            $('#plataformas_disponiveis').html(html);
+                            return;
+                        }
+
+                        var data = JSON.parse(JSON.stringify(data));
+                        var arrayHorarios = data.horarios;
+                        var plataformasLivres = data.plataformasLivres;
+
+                        var html = '';
+
+                        if(plataformasLivres.length < 0){
+                            html += '<div class="page-header">';
+                                html += '<h1>Não há plataformas disponíveis neste horário!</h1>';
+                            html += '</div>';
+                        } else {
+                            html += '<div class="page-header">';
+                                html += '<h1>Plataformas disponíveis</h1>';
+                            html += '</div>';
+
+                            html += '<div class="btn-group btn-group-justified" role="group" aria-label="...">';
+                                for (var i = 0; i < plataformasLivres.length; i++) {
+                                    html += '<div class="btn-group" role="group">';
+                                        html += '<button type="button" class="btn btn-default">' + plataformasLivres[i] + '</button>';
+                                    html += '</div>';
+                                }
+                            html += '</div>';
+                        }
+                        $('#plataformas_disponiveis').html(html);
+                        $('#text_ultimos_horarios').html('Cadastrados neste horário');
+
+                        html = '';
+                        for(var i = 0; i < arrayHorarios.length; i++ ){
+
+                            arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
+
+                            if(arrayHorarios[i].tipo == 'Extra') {
+                                html += '<tr class="info">';
+                            } else {
+                                html += '<tr>';
+                            }
+                                html += '<td>'+arrayHorarios[i].empresa+'</td>';
+                                html += '<td>'+arrayHorarios[i].rota+'</td>';
+                                html += '<td>'+arrayHorarios[i].tipo+'</td>';
+                                html += '<td>'+arrayHorarios[i].horario+'</td>';
+                                html += '<td>'+arrayHorarios[i].plataforma+'</td>';
+                            html += '</tr>';
+                        }
+                        $('#corpo_tabela').html(html);
+
+                    },
+                    beforeSend: function(){
+                        $('#img_loader').css({display:"block"});
+                        $('#corpo_tabela').html('');
+                    },
+                    complete: function(){
+                        $('#img_loader').css({display:"none"});
+                    }
+                }); // fim do ajax
+
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <!-- Barra navegação -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed"
+                data-toggle="collapse" data-target="#barra-navegacao">
+                <span class="sr-only">Alternar Menu</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">LOGO</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="barra-navegacao">
+            <div class="navbar-form navbar-right">
+                <div class="form-group">
+                    <input type="datetime-local" class="form-control" id="horario" name="horario" required >
+                </div>
+                <button type="submit" class="btn btn-primary" id="btn_pesquisar">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            </div>
+            <ul class="nav navbar-nav navbar-left">
+                <li> <a href="/">Home</a> </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Cadastrar <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li> <a href="/form_add_horario">Cadastrar Horarios</a> </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Minha Conta <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li> <a href="#">Editar</a> </li>
+                        <li> <a href="#">Logout</a> </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Fim Barra navegação -->
+
+    <div class="container">
+
+        <div id="plataformas_disponiveis"></div>
+
+        <div class="page-header">
+   			<h1 id="text_ultimos_horarios">Últimos horários cadastrados</h1>
+   		</div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead >
+                            <tr>
+                                <th>Empresa</th>
+                                <th>Rota</th>
+                                <th>Tipo</th>
+                                <th>Horário</th>
+                                <th>Plataforma</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpo_tabela">
+                            <!-- Inserir conteudo tabela -->
+                            <% if(horarios.length > 0) { %>
+        						<% for(var i = 0; i < horarios.length; i++) { %>
+                                    <% if(horarios[i].tipo == 'Extra') { %>
+                                    <tr class="info">
+                                    <% } else { %>
+                                    <tr>
+                                    <% } %>
+                                        <td><%=horarios[i].empresa%></td>
+                                        <td><%=horarios[i].rota%></td>
+                                        <td><%=horarios[i].tipo%></td>
+                                        <td><%=horarios[i].horario%></td>
+                                        <td><%=horarios[i].plataforma%></td>
+                                    </tr>
+        						<% } %>
+                			<% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <center><img src="images/loader.gif" style="display: none" id="img_loader"></center>
+
+
+            </div>
+        </div> <!-- /row -->
+    </div> <!-- /container -->
+
+</body>
+</html>

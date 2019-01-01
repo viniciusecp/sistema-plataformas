@@ -28,7 +28,20 @@ HorariosDAO.prototype.getPesquisa = function(dadosForm, callback) {
     var dados = {
         operacao: "consultar",
         documento: {
-            //plataforma: dadosForm.plataforma,
+            horario: {$gt: dadosForm.intervaloInferior, $lt: dadosForm.intervaloSuperior}
+        },
+        collection: "horarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
+
+HorariosDAO.prototype.getPesquisaInserção = function(dadosForm, callback) {
+
+    var dados = {
+        operacao: "consultar",
+        documento: {
+            plataforma: dadosForm.plataforma,
             horario: {$gt: dadosForm.intervaloInferior, $lt: dadosForm.intervaloSuperior}
         },
         collection: "horarios",

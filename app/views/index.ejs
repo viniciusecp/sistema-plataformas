@@ -21,14 +21,12 @@
 
             $('#btn_pesquisar').click(function(){
                 var horario = $('#horario').val();
-                var plataforma = $('#plataforma').val();
 
                 $.ajax({
                     url: '/horario/pesquisar',
                     method: 'post',
                     data: {
-                        horario: horario,
-                        plataforma: plataforma
+                        horario: horario
                     },
                     success: function(data){
                         //alert("requisiçao completada com sucesso");
@@ -64,7 +62,7 @@
                             html += '<div class="btn-group btn-group-justified" role="group" aria-label="...">';
                                 for (var i = 0; i < plataformasLivres.length; i++) {
                                     html += '<div class="btn-group" role="group">';
-                                        html += '<button type="button" class="btn btn-default">' + plataformasLivres[i] + '</button>';
+                                        html += '<button type="button" class="btn btn-default btn_plataforma_livre">' + plataformasLivres[i] + '</button>';
                                     html += '</div>';
                                 }
                             html += '</div>';
@@ -75,19 +73,14 @@
                         html = '';
                         for(var i = 0; i < arrayHorarios.length; i++ ){
 
-                            console.log('antes: '); console.log(arrayHorarios[i].horario);
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
-                            console.log('transformado em date: '); console.log(arrayHorarios[i].horario);
-                            var offset = arrayHorarios[i].horario.getTimezoneOffset();
-                            console.log('offset: '); console.log(offset);
-                            console.log('date sem offset: '); console.log(arrayHorarios[i].horario.getTime());
-                            arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
-                            console.log('date + offset: '); console.log(arrayHorarios[i].horario);
-                            arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
-                            console.log('date + offset em date: '); console.log(arrayHorarios[i].horario);
-                            //arrayHorarios[i].horario = new Date(arrayHorarios[i].horario.getTime() + offset);
-                            //alert('depois:');
-                            //alert(arrayHorarios[i].horario);
+
+                            var cloud = true;
+                            if(cloud){
+                                var offset = arrayHorarios[i].horario.getTimezoneOffset();
+                                arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
+                                arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
+                            }
 
                             if(arrayHorarios[i].tipo == 'Extra') {
                                 html += '<tr class="info">';
@@ -102,6 +95,12 @@
                             html += '</tr>';
                         }
                         $('#corpo_tabela').html(html);
+
+                        $('.btn_plataforma_livre').click(function(){
+                            var numero = $(this).html();
+
+                            window.location.href = "/form_add_horario?horario="+horario+"&numero="+numero;
+                        });
 
                     },
                     beforeSend: function(){

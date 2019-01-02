@@ -38,7 +38,7 @@
                                 html += '<strong>Atenção!</strong> Você esqueceu de informar algum valor!';
                             html += '</div>';
 
-                            $('#plataformas_disponiveis').html(html);
+                            $('#msg').html(html);
                             return;
                         }
 
@@ -65,7 +65,7 @@
                                 }
                             html += '</div>';
                         }
-                        $('#plataformas_disponiveis').html(html);
+                        $('#msg').html(html);
                         $('#text_ultimos_horarios').html('Cadastrados neste horário');
 
                         html = '';
@@ -90,6 +90,11 @@
                                 html += '<td>'+arrayHorarios[i].tipo+'</td>';
                                 html += '<td>'+ formatDate(arrayHorarios[i].horario) +'</td>';
                                 html += '<td>'+arrayHorarios[i].plataforma+'</td>';
+                                html += '<td>';
+                                    html += '<center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="'+arrayHorarios[i]._id+'">';
+                                        html += '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
+                                    html += '</button></center>';
+                                html += '</td>';
                             html += '</tr>';
                         }
                         $('#corpo_tabela').html(html);
@@ -98,6 +103,11 @@
                             var numero = $(this).html();
 
                             window.location.href = "/form_add_horario?horario="+horario+"&numero="+numero;
+                        });
+
+                        $('.btn_excluir_horario').click( function(){
+                            var _id = $(this).val();
+                            deleteHorario(_id);
                         });
 
                     },
@@ -127,6 +137,39 @@
 
                 return day + '/' + month + '/' + year + ', ' + hour + ':' + min;;
             }
+
+            $('.btn_excluir_horario').click( function(){
+                var _id = $(this).val();
+                deleteHorario(_id);
+            });
+
+            function deleteHorario(_id){
+                $.ajax({
+                    url: '/horario/deletar',
+                    method: 'post',
+                    data: {
+                        _id: _id
+                    },
+                    success: function(data){
+                        var html = '';
+                        if (data.status == 'Deletado com sucesso') {
+                            html += '<div class="alert alert-success">';
+                                html += '<strong>Remoção realizada com sucesso!</strong>';
+                            html += '</div>';
+                            setTimeout(function(){
+                                window.location.href = "/";
+                            }, 2500);
+                        }
+                        if (data.status == 'erro') {
+                            html += '<div class="alert alert-success">';
+                                html += '<strong>Houve algum erro ao tentar remover!</strong>';
+                            html += '</div>';
+                        }
+                        $('#msg').html(html);
+                    }
+                }); // fim ajax
+            }
+
 
         });
     </script>
@@ -163,6 +206,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li> <a href="/form_add_horario">Cadastrar Horarios</a> </li>
+                        <li> <a href="/form_add_usuario">Cadastrar Usuario</a> </li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -181,7 +225,7 @@
 
     <div class="container">
 
-        <div id="plataformas_disponiveis"></div>
+        <div id="msg"></div>
 
         <div class="page-header">
    			<h1 id="text_ultimos_horarios">Últimos horários cadastrados</h1>
@@ -198,6 +242,7 @@
                                 <th>Tipo</th>
                                 <th>Horário</th>
                                 <th>Plataforma</th>
+                                <th>Ação</th>
                             </tr>
                         </thead>
                         <tbody id="corpo_tabela">
@@ -214,6 +259,11 @@
                                         <td><%=horarios[i].tipo%></td>
                                         <td><%=horarios[i].horario%></td>
                                         <td><%=horarios[i].plataforma%></td>
+                                        <td>
+                                            <center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="<%=horarios[i]._id%>">
+                                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            </button></center>
+                                        </td>
                                     </tr>
         						<% } %>
                 			<% } %>

@@ -6,4 +6,8 @@ module.exports = function(application) {
     application.post('/horario/salvar', function(req, res){
         application.app.controllers.admin.horario_salvar(application, req, res);
     });
+
+    application.post('/horario/deletar', function(req, res){
+        application.app.controllers.admin.horario_deletar(application, req, res);
+    });
 }

@@ -1,3 +1,5 @@
+var ObjectID = require('mongodb').ObjectId;
+
 function HorariosDAO(connection) {
     this._connection = connection;
 }
@@ -66,6 +68,16 @@ HorariosDAO.prototype.getPesquisaInserçãoMultipla = function(dadosForm, callba
         documento: {
             $or: arrayQuery
         },
+        collection: "horarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
+
+HorariosDAO.prototype.deleteHorario = function(_id, callback){
+    var dados = {
+        operacao: "deletar",
+        documento: { _id: ObjectID(_id) },
         collection: "horarios",
         callback: callback
     };

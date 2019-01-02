@@ -129,3 +129,21 @@ function salvar_documento(dadosForm, res, HorariosDAO){
     }
     HorariosDAO.insertHorario(docs, callback);
 }
+
+module.exports.horario_deletar = function(application, req, res){
+
+    var _id = req.body._id;
+
+    var connection = application.config.dbConnection;
+    var HorariosDAO = new application.app.models.HorariosDAO(connection);
+
+    var callback = function(err, result) {
+        if(err){
+            console.log(err);
+            res.json({'status' : 'erro'});
+        } else {
+            res.json({'status' : 'Deletado com sucesso'});
+        }
+    };
+    HorariosDAO.deleteHorario(_id, callback);
+}

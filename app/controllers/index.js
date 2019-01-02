@@ -1,5 +1,4 @@
 var dateFormat = require('dateformat');
-var moment = require('moment');
 
 module.exports.index = function(application, req, res){
 

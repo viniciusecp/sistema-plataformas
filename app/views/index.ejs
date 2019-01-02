@@ -88,19 +88,7 @@
                                 html += '<td>'+arrayHorarios[i].empresa+'</td>';
                                 html += '<td>'+arrayHorarios[i].rota+'</td>';
                                 html += '<td>'+arrayHorarios[i].tipo+'</td>';
-
-                                /*alert(arrayHorarios[i].tipo);
-
-                                var date = arrayHorarios[i].horario;
-                                var day = date.getDay();
-                                var month = date.getMonth();
-                                var year = date.getFullYear();
-                                var min = date.getMinutes();
-                                var hour = date.getHours();
-
-
-                                html += '<td>'+day+'/'+month+'/'+year+', '+hour+":"+min+'</td>';*/
-                                html += '<td>'+arrayHorarios[i].horario+'</td>';
+                                html += '<td>'+ formatDate(arrayHorarios[i].horario) +'</td>';
                                 html += '<td>'+arrayHorarios[i].plataforma+'</td>';
                             html += '</tr>';
                         }
@@ -123,6 +111,22 @@
                 }); // fim do ajax
 
             });
+
+            function formatDate(date) {
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day   = '' +  d.getDate(),
+                    year  = '' +  d.getFullYear(),
+                    min   = '' +  d.getMinutes(),
+                    hour  = '' +  d.getHours();
+
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                if (hour.length < 2) hour = '0' + hour;
+                if (min.length < 2)  min  = '0' + min;
+
+                return day + '/' + month + '/' + year + ', ' + hour + ':' + min;;
+            }
 
         });
     </script>

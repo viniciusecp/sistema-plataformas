@@ -29,8 +29,6 @@
                         horario: horario
                     },
                     success: function(data){
-                        //alert("requisiçao completada com sucesso");
-                        //$('#corpo_tabela').html(JSON.stringify(data));
 
                         if (data == 'error') {
                             var html = '';
@@ -75,7 +73,7 @@
 
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
 
-                            var cloud = false;
+                            var cloud = true;
                             if(cloud){
                                 var offset = arrayHorarios[i].horario.getTimezoneOffset();
                                 arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
@@ -90,6 +88,18 @@
                                 html += '<td>'+arrayHorarios[i].empresa+'</td>';
                                 html += '<td>'+arrayHorarios[i].rota+'</td>';
                                 html += '<td>'+arrayHorarios[i].tipo+'</td>';
+
+                                /*alert(arrayHorarios[i].tipo);
+
+                                var date = arrayHorarios[i].horario;
+                                var day = date.getDay();
+                                var month = date.getMonth();
+                                var year = date.getFullYear();
+                                var min = date.getMinutes();
+                                var hour = date.getHours();
+
+
+                                html += '<td>'+day+'/'+month+'/'+year+', '+hour+":"+min+'</td>';*/
                                 html += '<td>'+arrayHorarios[i].horario+'</td>';
                                 html += '<td>'+arrayHorarios[i].plataforma+'</td>';
                             html += '</tr>';
@@ -207,7 +217,6 @@
                     </table>
                 </div>
                 <center><img src="images/loader.gif" style="display: none" id="img_loader"></center>
-
 
             </div>
         </div> <!-- /row -->

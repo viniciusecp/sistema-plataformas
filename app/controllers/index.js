@@ -1,3 +1,6 @@
+var dateFormat = require('dateformat');
+var moment = require('moment');
+
 module.exports.index = function(application, req, res){
 
     var connection = application.config.dbConnection;
@@ -6,6 +9,11 @@ module.exports.index = function(application, req, res){
 
     var callback = function(err, result) {
         result.toArray( function(errArray, resultArray){
+
+            for (var i = 0; i < resultArray.length; i++){
+                resultArray[i].horario = dateFormat(resultArray[i].horario, "dd/mm/yyyy, hh:MM");
+            }
+
             res.render("index", { horarios: resultArray });
         });
     }
@@ -50,6 +58,14 @@ module.exports.horario_pesquisar = function(application, req, res){
                         plataformasLivres.splice( plataformasLivres.indexOf(plataformasOcupadas[i]) , 1);
                     }
 
+                    /*for (var i = 0; i < resultArrayHorarios.length; i++){
+                        console.log(resultArrayHorarios[i].horario);
+                        var m = moment(resultArrayHorarios[i].horario);
+                        m.format('h:mm:ss');
+                        resultArrayHorarios[i].horario = m;
+                        console.log(resultArrayHorarios[i].horario);
+
+                    }*/
 
                     res.send({ horarios: resultArrayHorarios, plataformasLivres: plataformasLivres});
                 });

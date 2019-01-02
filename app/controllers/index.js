@@ -11,7 +11,7 @@ module.exports.index = function(application, req, res){
         result.toArray( function(errArray, resultArray){
 
             for (var i = 0; i < resultArray.length; i++){
-                resultArray[i].horario = dateFormat(resultArray[i].horario, "dd/mm/yyyy, hh:MM");
+                resultArray[i].horario = dateFormat(resultArray[i].horario, "dd/mm/yyyy, HH:MM");
             }
 
             res.render("index", { horarios: resultArray });

@@ -8,9 +8,96 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
 
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Bootstrap JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
     <link rel="shortcut icon" href="images/favicon-icon.png" />
 
     <title>Adicionar Horário</title>
+
+
+    <script>
+    $( document ).ready(function() {
+        $('#tipo').on('change', function() {
+            if (this.value == 'Normal') {
+                $('#div_insercoes').css('display', 'block');
+            }
+            if (this.value == 'Extra') {
+                $('#div_insercoes').css('display', 'none');
+            }
+        });
+
+        $('#btn_cadastrar').click( function() {
+
+            var form = $('#form_cadastro_horario');
+
+            $.ajax({
+                url: '/horario/salvar',
+                method: 'post',
+                data: form.serialize(),
+                success: function(data){
+                    var html = '';
+                    if (data.status == 'Inclusão realizada com sucesso') {
+                        html += '<div class="alert alert-success">';
+                            html += '<strong>Inclusão realizada com sucesso!</strong>';
+                        html += '</div>';
+                        setTimeout(function(){
+                            window.location.href = "/";
+                        }, 2500);
+                    }
+                    if (data.status == 'Conflito de horario') {
+                        var horarios_cadastrados = data.horarios_cadastrados;
+
+                        html += '<div class="page-header">';
+                   			html += '<h1>Este horario e plataforma bate com os seguintes já cadastrados:</h1>';
+                   		html += '</div>';
+
+                        html += '<div class="table-responsive">';
+                            html += '<table class="table table-striped table-bordered table-hover">';
+                                html += '<thead >';
+                                    html += '<tr>';
+                                        html += '<th>Empresa</th><th>Rota</th><th>Tipo</th><th>Horário</th><th>Plataforma</th>';
+                                    html += '</tr>';
+                                html += '</thead>';
+                                html += '<tbody>';
+                                for(var i = 0; i < horarios_cadastrados.length; i++ ){
+
+                                    horarios_cadastrados[i].horario = new Date(horarios_cadastrados[i].horario);
+
+                                    var cloud = false;
+                                    if(cloud){
+                                        var offset = horarios_cadastrados[i].horario.getTimezoneOffset();
+                                        horarios_cadastrados[i].horario = horarios_cadastrados[i].horario.getTime() + (offset * 60000);
+                                        horarios_cadastrados[i].horario = new Date(horarios_cadastrados[i].horario);
+                                    }
+
+                                    html += '<tr>';
+                                        html += '<td>'+horarios_cadastrados[i].empresa+'</td>';
+                                        html += '<td>'+horarios_cadastrados[i].rota+'</td>';
+                                        html += '<td>'+horarios_cadastrados[i].tipo+'</td>';
+                                        html += '<td>'+horarios_cadastrados[i].horario+'</td>';
+                                        html += '<td>'+horarios_cadastrados[i].plataforma+'</td>';
+                                    html += '</tr>';
+                                }
+                                html += '</tbody>';
+                            html += '</table>';
+                        html += '</div>';
+                    }
+                    if (data.status == 'erro') {
+                        html += '<div class="alert alert-success">';
+                            html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
+                        html += '</div>';
+                    }
+                    $('#msg').html(html);
+                }
+            }); // fim ajax
+
+        });
+
+    });
+    </script>
 
 </head>
 <body>
@@ -59,13 +146,16 @@
                 <strong>Operação inválida, verifique se todos os campos foram preenchidos!</strong>
             </div>
         <% } %>
+
+        <div id="msg"></div>
+
         <div class="page-header">
    			<h1>Adicionar novo horário</h1>
    		</div>
         <div class="row">
             <div class="col-md-0"></div>
             <div class="col-md-12">
-                <form action="/horario/salvar" method="post">
+                <form id="form_cadastro_horario">
                     <div class="form-group">
                         <label for="empresa">Empresa</label>
                         <select class="form-control" id="empresa" name="empresa" required>
@@ -118,29 +208,12 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-success btn-block">Cadastrar</button>
+                    <button type="button" class="btn btn-success btn-block" id="btn_cadastrar">Cadastrar</button>
                 </form>
             </div>
             <div class="col-md-0"></div>
         </div> <!-- /row -->
     </div> <!-- /container -->
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Bootstrap JS -->
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-
-    <script>
-    $( document ).ready(function() {
-        $('#tipo').on('change', function() {
-            if (this.value == 'Normal') {
-                $('#div_insercoes').css('display', 'block');
-            }
-            if (this.value == 'Extra') {
-                $('#div_insercoes').css('display', 'none');
-            }
-        });
-    });
-    </script>
 </body>
 </html>

@@ -50,6 +50,28 @@ HorariosDAO.prototype.getPesquisaInserção = function(dadosForm, callback) {
     this._connection(dados);
 };
 
+HorariosDAO.prototype.getPesquisaInserçãoMultipla = function(dadosForm, callback) {
+
+    var arrayQuery = [];
+    for(var i = 0; i < dadosForm.qnt_insercoes; i++){
+        var json = {
+            horario: {$gt: dadosForm.intervaloInferior[i], $lt: dadosForm.intervaloSuperior[i]},
+            plataforma: dadosForm.plataforma
+        };
+        arrayQuery.push(json);
+    }
+
+    var dados = {
+        operacao: "consultar",
+        documento: {
+            $or: arrayQuery
+        },
+        collection: "horarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
+
 module.exports = function() {
     return HorariosDAO;
 };

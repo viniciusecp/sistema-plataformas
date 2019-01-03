@@ -147,3 +147,60 @@ module.exports.horario_deletar = function(application, req, res){
     };
     HorariosDAO.deleteHorario(_id, callback);
 }
+
+module.exports.formulario_adicionar_usuario = function(application, req, res){
+
+    var connection = application.config.dbConnection;
+    var EmpresasDAO = new application.app.models.EmpresasDAO(connection);
+
+    var callback = function(err, result) {
+        result.toArray( function(errArray, resultArray){
+            res.render("admin/form_add_usuario", { empresas: resultArray });
+        });
+    };
+    EmpresasDAO.getEmpresas(callback);
+}
+
+module.exports.usuario_salvar = function(application, req, res){
+    var dadosForm = req.body;
+
+    req.assert('empresa', 'Empresa é obrigatório').notEmpty();
+    req.assert('nome_completo', 'Nome completo é obrigatório').notEmpty();
+    req.assert('usuario', 'Usuário é obrigatório').notEmpty();
+    req.assert('senha', 'Senha é obrigatório').notEmpty();
+
+    var erros = req.validationErrors();
+    if(erros){
+        res.json({'status' : 'Erro de validacao', erros: erros});
+        return;
+    }
+
+    var connection = application.config.dbConnection;
+    var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
+
+    var callback = function(err, result) {
+        result.toArray( function(errArray, resultArray){
+
+            if(resultArray[0] != undefined){
+                res.json({'status' : 'Usuario ja cadastrado'});
+                return;
+            }
+
+            var callbackInserir = function(errInserir, resultInserir) {
+                console.log(errInserir);
+                console.log('result');
+                console.log(resultInserir);
+                if(errInserir){
+                    res.json({'status' : 'erro'});
+                } else {
+                    console.log(resultInserir);
+                    res.json({'status' : 'Inclusão realizada com sucesso'});
+                }
+            }
+            var usuario = [];
+            usuario.push(dadosForm);
+            UsuariosDAO.inserirUsuario(usuario, callbackInserir);
+        });
+    };
+    UsuariosDAO.pesquisarExistente( dadosForm, callback );
+}

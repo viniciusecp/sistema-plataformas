@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Bootstrap JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <link rel="shortcut icon" href="images/favicon-icon.png" />
+
+    <title>Adicionar Usuário</title>
+
+    <script>
+    $( document ).ready(function() {
+
+        $('#btn_cadastrar').click( function() {
+            var empresa = $('#empresa').val();
+            var nome_completo = $('#nome_completo').val();
+            var usuario = $('#usuario').val();
+            var senha = $('#senha').val();
+            var confirmacao_senha = $('#confirmacao_senha').val();
+
+            if (senha != confirmacao_senha || senha == '') {
+                var html = '';
+                html += '<div class="alert alert-warning alert-dismissible" role="alert">';
+                    html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                    html += '<strong>Atenção!</strong> As senhas não são iguais!';
+                html += '</div>';
+                $('#msg').html(html);
+                return;
+            }
+
+            $.ajax({
+                url: '/usuario/salvar',
+                method: 'post',
+                data: {
+                    empresa: empresa,
+                    nome_completo: nome_completo,
+                    usuario: usuario,
+                    senha: senha,
+                },
+                success: function(data){
+                    var html = '';
+                    if (data.status == 'Inclusão realizada com sucesso') {
+                        html += '<div class="alert alert-success">';
+                            html += '<strong>Inclusão realizada com sucesso!</strong>';
+                        html += '</div>';
+                        setTimeout(function(){
+                            window.location.href = "/";
+                        }, 2500);
+                    }
+                    if (data.status == 'Erro de validacao') {
+                        html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Atenção!</strong>';
+                            html += '<ul>';
+                            for(var i = 0; i < data.erros.length; i++) {
+								html += '<li>'+ data.erros[i].msg +'</li>';
+							}
+							html += '</ul>';
+                        html += '</div>';
+                    }
+                    if (data.status == 'Usuario ja cadastrado') {
+                        html += '<div class="alert alert-warning">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Nome de usuário já está sendo utilizado, por favor, escolha outro.</strong>';
+                        html += '</div>';
+                    }
+                    if (data.status == 'erro') {
+                        html += '<div class="alert alert-danger">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
+                        html += '</div>';
+                    }
+
+
+                    $('#msg').html(html);
+                }
+            }); // fim ajax
+
+        });
+
+
+    });
+    </script>
+
+</head>
+<body>
+    <!-- Barra navegação -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed"
+                data-toggle="collapse" data-target="#barra-navegacao">
+                <span class="sr-only">Alternar Menu</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">LOGO</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="barra-navegacao">
+            <ul class="nav navbar-nav navbar-left">
+                <li> <a href="/">Home</a> </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Cadastrar <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li> <a href="/form_add_horario">Cadastrar Horarios</a> </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Minha Conta <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li> <a href="#">Editar</a> </li>
+                        <li> <a href="#">Logout</a> </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Fim Barra navegação -->
+
+    <div class="container">
+
+        <div id="msg"></div>
+
+        <div class="page-header">
+   			<h1>Adicionar novo Usuário</h1>
+   		</div>
+        <div class="row">
+            <div class="col-md-12">
+                <form id="form_cadastro_usuario">
+                    <div class="form-group">
+                        <label for="empresa">Empresa</label>
+                        <select class="form-control" id="empresa" name="empresa">
+                            <option value="" selected>Choose...</option>
+                            <% if(empresas.length > 0) { %>
+                                <% for(var i = 0; i < empresas.length; i++) { %>
+                                    <option value="<%=empresas[i].nome%>"><%=empresas[i].nome%></option>
+                                <% } %>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nome_completo">Nome completo:</label>
+                        <input type="text" class="form-control" id="nome_completo" name="nome_completo">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usuario">Usuário:</label>
+                        <input type="text" class="form-control" id="usuario" name="usuario">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="senha">Senha:</label>
+                        <input type="password" class="form-control" id="senha" name="senha">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmacao_senha">Digite a senha novamente:</label>
+                        <input type="password" class="form-control" id="confirmacao_senha" name="confirmacao_senha">
+                    </div>
+
+                    <button type="button" class="btn btn-success btn-block" id="btn_cadastrar">Cadastrar</button>
+                </form>
+            </div>
+        </div> <!-- /row -->
+    </div> <!-- /container -->
+
+</body>
+</html>

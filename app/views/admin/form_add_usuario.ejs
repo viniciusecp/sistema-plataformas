@@ -26,6 +26,7 @@
             var usuario = $('#usuario').val();
             var senha = $('#senha').val();
             var confirmacao_senha = $('#confirmacao_senha').val();
+            var tipo_usuario = $("input[name='radiosTipo']:checked").val();
 
             if (senha != confirmacao_senha || senha == '') {
                 var html = '';
@@ -45,6 +46,7 @@
                     nome_completo: nome_completo,
                     usuario: usuario,
                     senha: senha,
+                    tipo_usuario: tipo_usuario
                 },
                 success: function(data){
                     var html = '';
@@ -115,23 +117,6 @@
         <div class="collapse navbar-collapse" id="barra-navegacao">
             <ul class="nav navbar-nav navbar-left">
                 <li> <a href="/">Home</a> </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Cadastrar <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li> <a href="/form_add_horario">Cadastrar Horarios</a> </li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Minha Conta <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li> <a href="#">Editar</a> </li>
-                        <li> <a href="#">Logout</a> </li>
-                    </ul>
-                </li>
             </ul>
         </div>
     </nav>
@@ -179,6 +164,15 @@
                         <input type="password" class="form-control" id="confirmacao_senha" name="confirmacao_senha">
                     </div>
 
+                    <label>Selecione o tipo do usuário:</label><br />
+                    <div class="radio-inline">
+                        <label> <input type="radio" name="radiosTipo" value="comum" checked> Comum </label>
+                    </div>
+                    <div class="radio-inline">
+                        <label> <input type="radio" name="radiosTipo" value="administrador"> Administrador </label>
+                    </div>
+
+                    <br /><br />
                     <button type="button" class="btn btn-success btn-block" id="btn_cadastrar">Cadastrar</button>
                 </form>
             </div>

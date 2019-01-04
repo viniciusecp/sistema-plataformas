@@ -140,23 +140,6 @@
         <div class="collapse navbar-collapse" id="barra-navegacao">
             <ul class="nav navbar-nav navbar-left">
                 <li> <a href="/">Home</a> </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Cadastrar <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li> <a href="/form_add_horario">Cadastrar Horarios</a> </li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Minha Conta <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li> <a href="#">Editar</a> </li>
-                        <li> <a href="#">Logout</a> </li>
-                    </ul>
-                </li>
             </ul>
         </div>
     </nav>
@@ -182,8 +165,14 @@
                         <label for="empresa">Empresa</label>
                         <select class="form-control" id="empresa" name="empresa" required>
                             <option value="" selected>Choose...</option>
-                            <% if(empresa.length > 0) { %>
-                                <option value="<%=empresa%>" selected><%=empresa%></option>
+                            <% if(empresas.length > 0) { %>
+                                <% for(var i = 0; i < empresas.length; i++) { %>
+                                    <% if(empresa_usuario == empresas[i].nome) { %>
+                                        <option value=<%=empresas[i].nome%> selected ><%=empresas[i].nome%></option>
+                                    <% } else { %>
+                                        <option value=<%=empresas[i].nome%> ><%=empresas[i].nome%></option>
+                                    <% } %>
+                                <% } %>
                             <% } %>
                         </select>
                     </div>

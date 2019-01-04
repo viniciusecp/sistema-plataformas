@@ -8,10 +8,36 @@ module.exports.formulario_adicionar_horario = function(application, req, res){
 
     var connection = application.config.dbConnection;
     var PlataformasDAO = new application.app.models.PlataformasDAO(connection);
+    var EmpresasDAO = new application.app.models.EmpresasDAO(connection);
 
     var callbackPlataformas = function(errPlataformas, resultPlataformas){
         resultPlataformas.toArray( function(errArrayPlataformas, resultArrayPlataformas){
-            res.render("admin/form_add_horario", { empresa: req.session.empresa, plataformas: resultArrayPlataformas, msg: msg, dados_pag_pesquisa: dados_pag_pesquisa });
+
+            if (req.session.tipo_usuario === 'administrador') {
+
+                var callbackEmpresas = function(errEmpresas, resultEmpresas){
+                    resultEmpresas.toArray( function(errArrayEmpresas, resultArrayEmpresas){
+                        res.render("admin/form_add_horario", {
+                            empresas: resultArrayEmpresas,
+                            empresa_usuario: req.session.empresa,
+                            plataformas: resultArrayPlataformas,
+                            msg: msg,
+                            dados_pag_pesquisa: dados_pag_pesquisa
+                        });
+                    });
+                };
+                EmpresasDAO.getEmpresas(callbackEmpresas);
+
+            } else {
+                var empresas = Array( { nome: req.session.empresa} );
+                res.render("admin/form_add_horario", {
+                    empresas: empresas,
+                    empresa_usuario: req.session.empresa,
+                    plataformas: resultArrayPlataformas,
+                    msg: msg,
+                    dados_pag_pesquisa: dados_pag_pesquisa
+                });
+            }
         });
     };
     PlataformasDAO.getPlataformas(callbackPlataformas);
@@ -115,6 +141,8 @@ module.exports.horario_deletar = function(application, req, res){
 module.exports.formulario_adicionar_usuario = function(application, req, res){
     if (req.session.autorizado !== true) { res.redirect("/index?msg=Usuário precisa estar conectado para acessar essa área!");  return; }
 
+    if (req.session.tipo_usuario !== 'administrador') { res.redirect("/index?msg=Usuário precisa ser administrador para acessar essa área!");  return; }
+
     var connection = application.config.dbConnection;
     var EmpresasDAO = new application.app.models.EmpresasDAO(connection);
 
@@ -129,12 +157,15 @@ module.exports.formulario_adicionar_usuario = function(application, req, res){
 module.exports.usuario_salvar = function(application, req, res){
     if (req.session.autorizado !== true) { res.json({'status': 'Usuário precisa estar conectado para acessar essa área!'}); return; }
 
+    if (req.session.tipo_usuario !== 'administrador') { res.redirect("/index?msg=Usuário precisa ser administrador para acessar essa área!");  return; }
+
     var dadosForm = req.body;
 
     req.assert('empresa', 'Empresa é obrigatório').notEmpty();
     req.assert('nome_completo', 'Nome completo é obrigatório').notEmpty();
     req.assert('usuario', 'Usuário é obrigatório').notEmpty();
     req.assert('senha', 'Senha é obrigatório').notEmpty();
+    // tipo sempre estará selecionado por ser type radio, o primeiro já vem selecioando
 
     var erros = req.validationErrors();
     if(erros){
@@ -161,10 +192,7 @@ module.exports.usuario_salvar = function(application, req, res){
                     res.json({'status' : 'Inclusão realizada com sucesso'});
                 }
             }
-            var usuario = [];if (req != true) {
-        res.render("index", { msg: 'Usuário precisa estar conectado para acessar essa área!' });
-    }
-            usuario.push(dadosForm);
+            var usuario = Array( dadosForm );
             UsuariosDAO.inserirUsuario(usuario, callbackInserir);
         });
     };

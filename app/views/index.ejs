@@ -165,6 +165,8 @@
                                 $('#msg').html('');
                             }, 2500);
 
+                            $('#nome_usuario').html(data.nome_completo);
+
                             $('#li_form_entrar').css({display:"none"});
                             $('#li_btn_sair').css({display:"block"});
                             $('#li_dropdown_entrar').removeClass("open");
@@ -265,7 +267,12 @@
                 </li>
                 <li class="dropdown" id="li_dropdown_entrar">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Minha Conta <span class="caret"></span>
+                        <% if(usuarioAutenticado == false){ %>
+                        <span id="nome_usuario"> Minha Conta </span>
+                        <% } else { %>
+                        <span id="nome_usuario"><%=nome_completo%></span>
+                        <% } %>
+                        <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
                         <% if(usuarioAutenticado == false){ %>

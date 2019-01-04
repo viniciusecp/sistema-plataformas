@@ -19,7 +19,12 @@ module.exports.index = function(application, req, res){
                 resultArray[i].horario = dateFormat(resultArray[i].horario, "dd/mm/yyyy, HH:MM");
             }
 
-            res.render("index", { horarios: resultArray, usuarioAutenticado: usuarioAutenticado, msg: msg });
+            res.render("index", {
+                horarios: resultArray,
+                usuarioAutenticado: usuarioAutenticado,
+                nome_completo: req.session.nome_completo,
+                msg: msg
+            });
         });
     }
     HorariosDAO.get10UltimosHorarios(callback);
@@ -95,12 +100,14 @@ module.exports.autenticar = function(application, req, res){
                 req.session.autorizado = true;
 
                 req.session.empresa = resultArray[0].empresa;
+                req.session.tipo_usuario = resultArray[0].tipo_usuario;
+                req.session.nome_completo = resultArray[0].nome_completo;
             }
 
             if(req.session.autorizado){
-                res.json({'status' : 'Usuario autenticado com sucesso'});
+                res.json({ 'status' : 'Usuario autenticado com sucesso', nome_completo: req.session.nome_completo });
             } else {
-                res.json({'status' : 'Usuario ou senha incorretos'});
+                res.json({ 'status' : 'Usuario ou senha incorretos' });
             }
         });
     }

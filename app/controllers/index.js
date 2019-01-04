@@ -2,6 +2,12 @@ var dateFormat = require('dateformat');
 
 module.exports.index = function(application, req, res){
 
+    var usuarioAutenticado = false;
+    if(req.session.autorizado === true) { usuarioAutenticado = true; }
+
+    var msg = '';
+    if (req.query.msg) { msg = req.query.msg; }
+
     var connection = application.config.dbConnection;
     var HorariosDAO = new application.app.models.HorariosDAO(connection);
     var PlataformasDAO = new application.app.models.PlataformasDAO(connection);
@@ -13,7 +19,7 @@ module.exports.index = function(application, req, res){
                 resultArray[i].horario = dateFormat(resultArray[i].horario, "dd/mm/yyyy, HH:MM");
             }
 
-            res.render("index", { horarios: resultArray });
+            res.render("index", { horarios: resultArray, usuarioAutenticado: usuarioAutenticado, msg: msg });
         });
     }
     HorariosDAO.get10UltimosHorarios(callback);
@@ -57,15 +63,6 @@ module.exports.horario_pesquisar = function(application, req, res){
                         plataformasLivres.splice( plataformasLivres.indexOf(plataformasOcupadas[i]) , 1);
                     }
 
-                    /*for (var i = 0; i < resultArrayHorarios.length; i++){
-                        console.log(resultArrayHorarios[i].horario);
-                        var m = moment(resultArrayHorarios[i].horario);
-                        m.format('h:mm:ss');
-                        resultArrayHorarios[i].horario = m;
-                        console.log(resultArrayHorarios[i].horario);
-
-                    }*/
-
                     res.send({ horarios: resultArrayHorarios, plataformasLivres: plataformasLivres});
                 });
             };
@@ -77,6 +74,45 @@ module.exports.horario_pesquisar = function(application, req, res){
 
 }
 
+module.exports.autenticar = function(application, req, res){
+    var dadosForm = req.body;
+
+    req.assert('usuario', 'Usuário não pode ser vazio').notEmpty();
+    req.assert('senha', 'Senha não pode ser vazio').notEmpty();
+
+    var erros = req.validationErrors();
+    if(erros){
+        res.json({'status' : 'Erro de validacao', erros: erros});
+        return;
+    }
+
+    var connection = application.config.dbConnection;
+    var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
+
+    var callback = function(err, result) {
+        result.toArray( function(errArray, resultArray){
+            if(resultArray[0] != undefined){
+                req.session.autorizado = true;
+
+                req.session.empresa = resultArray[0].empresa;
+            }
+
+            if(req.session.autorizado){
+                res.json({'status' : 'Usuario autenticado com sucesso'});
+            } else {
+                res.json({'status' : 'Usuario ou senha incorretos'});
+            }
+        });
+    }
+    UsuariosDAO.autenticar(dadosForm, callback);
+}
+
+module.exports.sair = function(application, req, res){
+    req.session.destroy( function(err){
+        res.redirect('/');
+    });
+}
+
 function getPlataformas(json){
     var plataformasOcupadasAux = [];
     for(var i = 0; i < json.length; i++){
@@ -86,5 +122,4 @@ function getPlataformas(json){
         return plataformasOcupadasAux.indexOf(i) == j;
     });
     return plataformasOcupadas;
-
 }

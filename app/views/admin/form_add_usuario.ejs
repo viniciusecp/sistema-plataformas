@@ -73,6 +73,12 @@
                             html += '<strong>Nome de usuário já está sendo utilizado, por favor, escolha outro.</strong>';
                         html += '</div>';
                     }
+                    if (data.status == 'Usuário precisa estar conectado para acessar essa área!') {
+                        html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Usuário precisa estar conectado para executar essa ação!</strong>';
+                        html += '</div>';
+                    }
                     if (data.status == 'erro') {
                         html += '<div class="alert alert-danger">';
                             html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
@@ -86,7 +92,6 @@
             }); // fim ajax
 
         });
-
 
     });
     </script>

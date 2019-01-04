@@ -85,6 +85,12 @@
                             html += '</table>';
                         html += '</div>';
                     }
+                    if (data.status == 'Usuário precisa estar conectado para acessar essa área!') {
+                        html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Usuário precisa estar conectado para executar essa ação!</strong>';
+                        html += '</div>';
+                    }
                     if (data.status == 'erro') {
                         html += '<div class="alert alert-success">';
                             html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
@@ -176,10 +182,8 @@
                         <label for="empresa">Empresa</label>
                         <select class="form-control" id="empresa" name="empresa" required>
                             <option value="" selected>Choose...</option>
-                            <% if(empresas.length > 0) { %>
-                                <% for(var i = 0; i < empresas.length; i++) { %>
-                                    <option value="<%=empresas[i].nome%>"><%=empresas[i].nome%></option>
-                                <% } %>
+                            <% if(empresa.length > 0) { %>
+                                <option value="<%=empresa%>" selected><%=empresa%></option>
                             <% } %>
                         </select>
                     </div>

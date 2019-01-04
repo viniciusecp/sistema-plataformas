@@ -65,7 +65,7 @@
                                 }
                             html += '</div>';
                         }
-                        $('#msg').html(html);
+                        $('#msg_poltronas_livres').html(html);
                         $('#text_ultimos_horarios').html('Cadastrados neste horário');
 
                         html = '';
@@ -122,6 +122,58 @@
 
             });
 
+            $('.btn_excluir_horario').click( function(){
+                var _id = $(this).val();
+                deleteHorario(_id);
+            });
+
+            $('#btn_entrar').click( function(){
+                var usuario = $('#usuario').val();
+                var senha = $('#senha').val();
+
+                $.ajax({
+                    url: '/autenticar',
+                    method: 'post',
+                    data: {
+                        usuario: usuario,
+                        senha: senha
+                    },
+                    success: function(data){
+                        var html = '';
+                        if (data.status == 'Erro de validacao') {
+                            html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                                html += '<strong>Atenção!</strong>';
+                                html += '<ul>';
+                                for(var i = 0; i < data.erros.length; i++) {
+    								html += '<li>'+ data.erros[i].msg +'</li>';
+    							}
+    							html += '</ul>';
+                            html += '</div>';
+                        }
+                        if (data.status == 'Usuario ou senha incorretos') {
+                            html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                                html += '<strong>Usuario ou senha incorretos!!</strong>';
+                            html += '</div>';
+                        }
+                        if (data.status == 'Usuario autenticado com sucesso') {
+                            html += '<div class="alert alert-success">';
+                                html += '<strong>Usuário autenticado com sucesso!</strong>';
+                            html += '</div>';
+                            setTimeout(function(){
+                                $('#msg').html('');
+                            }, 2500);
+
+                            $('#li_form_entrar').css({display:"none"});
+                            $('#li_btn_sair').css({display:"block"});
+                            $('#li_dropdown_entrar').removeClass("open");
+                        }
+                        $('#msg').html(html);
+                    }
+                }); // fim ajax
+            });
+
             function formatDate(date) {
                 var d = new Date(date),
                     month = '' + (d.getMonth() + 1),
@@ -137,11 +189,6 @@
 
                 return day + '/' + month + '/' + year + ', ' + hour + ':' + min;;
             }
-
-            $('.btn_excluir_horario').click( function(){
-                var _id = $(this).val();
-                deleteHorario(_id);
-            });
 
             function deleteHorario(_id){
                 $.ajax({
@@ -160,8 +207,15 @@
                                 window.location.href = "/";
                             }, 2500);
                         }
+                        if (data.status == 'Usuário precisa estar conectado para acessar essa área!') {
+                            html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                                html += '<strong>Usuário precisa estar conectado para executar essa ação!</strong>';
+                            html += '</div>';
+                        }
                         if (data.status == 'erro') {
-                            html += '<div class="alert alert-success">';
+                            html += '<div class="alert alert-success alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                                 html += '<strong>Houve algum erro ao tentar remover!</strong>';
                             html += '</div>';
                         }
@@ -209,13 +263,35 @@
                         <li> <a href="/form_add_usuario">Cadastrar Usuario</a> </li>
                     </ul>
                 </li>
-                <li class="dropdown">
+                <li class="dropdown" id="li_dropdown_entrar">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         Minha Conta <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li> <a href="#">Editar</a> </li>
-                        <li> <a href="#">Logout</a> </li>
+                        <% if(usuarioAutenticado == false){ %>
+                        <li id="li_form_entrar">
+                        <% } else { %>
+                        <li id="li_form_entrar" style="display:none">
+                        <% } %>
+                            <div class="col-sm-12">
+                                <form class="navbar-form">
+                       				<div class="form-group">
+                       					<input type="text" class="form-control" id="usuario" placeholder="Digite seu usuário">
+                       				</div>
+                       				<div class="form-group">
+                       					<input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+                       				</div>
+                       				<button type="button" class="btn btn-primary btn-block" id="btn_entrar">Entrar</button>
+                                </form>
+                   			</div>
+                        </li>
+                        <% if(usuarioAutenticado == true){ %>
+                        <li id="li_btn_sair">
+                        <% } else { %>
+                        <li id="li_btn_sair" style="display:none">
+                        <% } %>
+                            <a href="/sair">Sair</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -225,7 +301,16 @@
 
     <div class="container">
 
-        <div id="msg"></div>
+        <div id="msg">
+        <% if(msg != '') {%>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong><%= msg %></strong>
+            </div>
+        <% } %>
+        </div>
+
+        <div id="msg_poltronas_livres"></div>
 
         <div class="page-header">
    			<h1 id="text_ultimos_horarios">Últimos horários cadastrados</h1>

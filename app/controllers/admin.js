@@ -1,32 +1,26 @@
 module.exports.formulario_adicionar_horario = function(application, req, res){
+    if (req.session.autorizado !== true) { res.redirect("/index?msg=Usuário precisa estar conectado para acessar essa área!");  return; }
 
     var dados_pag_pesquisa = req.query;
 
     var msg = '';
-    if(req.query.msg != ''){
-        msg = req.query.msg;
-    }
+    if(req.query.msg != '') msg = req.query.msg;
 
     var connection = application.config.dbConnection;
-    var EmpresasDAO = new application.app.models.EmpresasDAO(connection);
     var PlataformasDAO = new application.app.models.PlataformasDAO(connection);
 
-    var callbackEmpresas = function(errEmpresas, resultEmpresas) {
-        resultEmpresas.toArray( function(errArrayEmpresas, resultArrayEmpresas){
-
-            var callbackPlataformas = function(errPlataformas, resultPlataformas){
-                resultPlataformas.toArray( function(errArrayPlataformas, resultArrayPlataformas){
-                    res.render("admin/form_add_horario", { empresas: resultArrayEmpresas, plataformas: resultArrayPlataformas, msg: msg, dados_pag_pesquisa: dados_pag_pesquisa });
-                });
-            };
-            PlataformasDAO.getPlataformas(callbackPlataformas);
-
+    var callbackPlataformas = function(errPlataformas, resultPlataformas){
+        resultPlataformas.toArray( function(errArrayPlataformas, resultArrayPlataformas){
+            res.render("admin/form_add_horario", { empresa: req.session.empresa, plataformas: resultArrayPlataformas, msg: msg, dados_pag_pesquisa: dados_pag_pesquisa });
         });
     };
-    EmpresasDAO.getEmpresas(callbackEmpresas);
+    PlataformasDAO.getPlataformas(callbackPlataformas);
+
 }
 
 module.exports.horario_salvar = function(application, req, res){
+    if (req.session.autorizado !== true) { res.json({'status': 'Usuário precisa estar conectado para acessar essa área!'}); return; }
+
     var dadosForm = req.body;
 
     req.assert('empresa', 'Empresa é obrigatório').notEmpty();
@@ -99,6 +93,84 @@ module.exports.horario_salvar = function(application, req, res){
     }
 }
 
+module.exports.horario_deletar = function(application, req, res){
+    if (req.session.autorizado !== true) { res.json({'status': 'Usuário precisa estar conectado para acessar essa área!'}); return; }
+
+    var _id = req.body._id;
+
+    var connection = application.config.dbConnection;
+    var HorariosDAO = new application.app.models.HorariosDAO(connection);
+
+    var callback = function(err, result) {
+        if(err){
+            console.log(err);
+            res.json({'status' : 'erro'});
+        } else {
+            res.json({'status' : 'Deletado com sucesso'});
+        }
+    };
+    HorariosDAO.deleteHorario(_id, callback);
+}
+
+module.exports.formulario_adicionar_usuario = function(application, req, res){
+    if (req.session.autorizado !== true) { res.redirect("/index?msg=Usuário precisa estar conectado para acessar essa área!");  return; }
+
+    var connection = application.config.dbConnection;
+    var EmpresasDAO = new application.app.models.EmpresasDAO(connection);
+
+    var callback = function(err, result) {
+        result.toArray( function(errArray, resultArray){
+            res.render("admin/form_add_usuario", { empresas: resultArray });
+        });
+    };
+    EmpresasDAO.getEmpresas(callback);
+}
+
+module.exports.usuario_salvar = function(application, req, res){
+    if (req.session.autorizado !== true) { res.json({'status': 'Usuário precisa estar conectado para acessar essa área!'}); return; }
+
+    var dadosForm = req.body;
+
+    req.assert('empresa', 'Empresa é obrigatório').notEmpty();
+    req.assert('nome_completo', 'Nome completo é obrigatório').notEmpty();
+    req.assert('usuario', 'Usuário é obrigatório').notEmpty();
+    req.assert('senha', 'Senha é obrigatório').notEmpty();
+
+    var erros = req.validationErrors();
+    if(erros){
+        res.json({'status' : 'Erro de validacao', erros: erros});
+        return;
+    }
+
+    var connection = application.config.dbConnection;
+    var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
+
+    var callback = function(err, result) {
+        result.toArray( function(errArray, resultArray){
+
+            if(resultArray[0] != undefined){
+                res.json({'status' : 'Usuario ja cadastrado'});
+                return;
+            }
+
+            var callbackInserir = function(errInserir, resultInserir) {
+                if(errInserir){
+                    console.log(errInserir);
+                    res.json({'status' : 'erro'});
+                } else {
+                    res.json({'status' : 'Inclusão realizada com sucesso'});
+                }
+            }
+            var usuario = [];if (req != true) {
+        res.render("index", { msg: 'Usuário precisa estar conectado para acessar essa área!' });
+    }
+            usuario.push(dadosForm);
+            UsuariosDAO.inserirUsuario(usuario, callbackInserir);
+        });
+    };
+    UsuariosDAO.pesquisarExistente( dadosForm, callback );
+}
+
 function salvar_documento(dadosForm, res, HorariosDAO){
     var callback = function(err, result) {
         if(err){
@@ -128,79 +200,4 @@ function salvar_documento(dadosForm, res, HorariosDAO){
         docs.push(dadosForm);
     }
     HorariosDAO.insertHorario(docs, callback);
-}
-
-module.exports.horario_deletar = function(application, req, res){
-
-    var _id = req.body._id;
-
-    var connection = application.config.dbConnection;
-    var HorariosDAO = new application.app.models.HorariosDAO(connection);
-
-    var callback = function(err, result) {
-        if(err){
-            console.log(err);
-            res.json({'status' : 'erro'});
-        } else {
-            res.json({'status' : 'Deletado com sucesso'});
-        }
-    };
-    HorariosDAO.deleteHorario(_id, callback);
-}
-
-module.exports.formulario_adicionar_usuario = function(application, req, res){
-
-    var connection = application.config.dbConnection;
-    var EmpresasDAO = new application.app.models.EmpresasDAO(connection);
-
-    var callback = function(err, result) {
-        result.toArray( function(errArray, resultArray){
-            res.render("admin/form_add_usuario", { empresas: resultArray });
-        });
-    };
-    EmpresasDAO.getEmpresas(callback);
-}
-
-module.exports.usuario_salvar = function(application, req, res){
-    var dadosForm = req.body;
-
-    req.assert('empresa', 'Empresa é obrigatório').notEmpty();
-    req.assert('nome_completo', 'Nome completo é obrigatório').notEmpty();
-    req.assert('usuario', 'Usuário é obrigatório').notEmpty();
-    req.assert('senha', 'Senha é obrigatório').notEmpty();
-
-    var erros = req.validationErrors();
-    if(erros){
-        res.json({'status' : 'Erro de validacao', erros: erros});
-        return;
-    }
-
-    var connection = application.config.dbConnection;
-    var UsuariosDAO = new application.app.models.UsuariosDAO(connection);
-
-    var callback = function(err, result) {
-        result.toArray( function(errArray, resultArray){
-
-            if(resultArray[0] != undefined){
-                res.json({'status' : 'Usuario ja cadastrado'});
-                return;
-            }
-
-            var callbackInserir = function(errInserir, resultInserir) {
-                console.log(errInserir);
-                console.log('result');
-                console.log(resultInserir);
-                if(errInserir){
-                    res.json({'status' : 'erro'});
-                } else {
-                    console.log(resultInserir);
-                    res.json({'status' : 'Inclusão realizada com sucesso'});
-                }
-            }
-            var usuario = [];
-            usuario.push(dadosForm);
-            UsuariosDAO.inserirUsuario(usuario, callbackInserir);
-        });
-    };
-    UsuariosDAO.pesquisarExistente( dadosForm, callback );
 }

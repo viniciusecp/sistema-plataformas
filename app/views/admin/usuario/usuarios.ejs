@@ -114,7 +114,13 @@
                                         <td><%=usuarios[i].empresa%></td>
                                         <td><%=usuarios[i].nome_completo%></td>
                                         <td><%=usuarios[i].usuario%></td>
-                                        <td><%=usuarios[i].tipo_usuario%></td>
+                                        <td>
+                                            <% if(usuarios[i].tipo_usuario == 'administrador') { %>
+                                            <span class="label label-primary"><%=usuarios[i].tipo_usuario%></span>
+                                            <% } if(usuarios[i].tipo_usuario == 'comum') { %>
+                                            <span class="label label-default"><%=usuarios[i].tipo_usuario%></span>
+                                            <% } %>
+                                        </td>
                                         <td>
                                             <center>
                                                 <button type="button" class="btn btn-danger btn-sm btn_excluir_usuario" value="<%=usuarios[i]._id%>">

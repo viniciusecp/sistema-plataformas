@@ -64,6 +64,7 @@ module.exports.horario_salvar = function(application, req, res){
     }
 
     dadosForm.horario = new Date(dadosForm.horario);
+    dadosForm.usuario_criacao = req.session.usuario;
 
     var connection = application.config.dbConnection;
     var HorariosDAO = new application.app.models.HorariosDAO(connection);

@@ -61,12 +61,12 @@ module.exports.horario_pesquisar = function(application, req, res){
             var callbackPlataformas = function(errPlataformas, resultPlataformas){
                 resultPlataformas.toArray( function (errArrayPlataformas, resultArrayPlataformas) {
 
-                    var plataformasLivres = getPlataformas(resultArrayPlataformas);
+                    var todasPlataformas = getPlataformas(resultArrayPlataformas);
 
-                    // retirar plataformas ocupadas do array das plataformas livres
-                    for(var i = 0; i < plataformasOcupadas.length; i++){
-                        plataformasLivres.splice( plataformasLivres.indexOf(plataformasOcupadas[i]) , 1);
-                    }
+                    var plataformasLivres = getPlataformasLivres(todasPlataformas, plataformasOcupadas);
+
+                    // ordenar vetor para melhor apresentação na tela
+                    plataformasLivres.sort(function(a,b) { return a - b; });
 
                     res.send({ horarios: resultArrayHorarios, plataformasLivres: plataformasLivres});
                 });
@@ -76,7 +76,6 @@ module.exports.horario_pesquisar = function(application, req, res){
         });
     };
     HorariosDAO.getPesquisa(dadosForm, callbackHorarios);
-
 }
 
 module.exports.autenticar = function(application, req, res){
@@ -102,6 +101,7 @@ module.exports.autenticar = function(application, req, res){
                 req.session.empresa = resultArray[0].empresa;
                 req.session.tipo_usuario = resultArray[0].tipo_usuario;
                 req.session.nome_completo = resultArray[0].nome_completo;
+                req.session.usuario = resultArray[0].usuario;
             }
 
             if(req.session.autorizado){
@@ -129,4 +129,19 @@ function getPlataformas(json){
         return plataformasOcupadasAux.indexOf(i) == j;
     });
     return plataformasOcupadas;
+}
+
+function getPlataformasLivres(todasPlataformas, plataformasOcupadas){
+    var indexPlataformasOcupadas = [];
+    for(var i = 0; i < plataformasOcupadas.length; i++){
+        for (var j = 0; j < todasPlataformas.length; j++) {
+            if (plataformasOcupadas[i] == todasPlataformas[j]) {
+                indexPlataformasOcupadas.push(j);
+            }
+        }
+    }
+    for (var i = indexPlataformasOcupadas.length; i > 0; i--) {
+        todasPlataformas.splice(indexPlataformasOcupadas[i - 1], 1);
+    }
+    return todasPlataformas;
 }

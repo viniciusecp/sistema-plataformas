@@ -58,7 +58,7 @@
                             html += '<table class="table table-striped table-bordered table-hover">';
                                 html += '<thead >';
                                     html += '<tr>';
-                                        html += '<th>Empresa</th><th>Rota</th><th>Tipo</th><th>Horário</th><th>Plataforma</th>';
+                                        html += '<th>Empresa</th><th>Rota</th><th>Tipo</th><th>Horário</th><th>Plataforma</th><th>Criador</th>';
                                     html += '</tr>';
                                 html += '</thead>';
                                 html += '<tbody>';
@@ -79,6 +79,7 @@
                                         html += '<td>'+horarios_cadastrados[i].tipo+'</td>';
                                         html += '<td>'+formatDate(horarios_cadastrados[i].horario)+'</td>';
                                         html += '<td>'+horarios_cadastrados[i].plataforma+'</td>';
+                                        html += '<td>'+horarios_cadastrados[i].usuario_criacao+'</td>';
                                     html += '</tr>';
                                 }
                                 html += '</tbody>';

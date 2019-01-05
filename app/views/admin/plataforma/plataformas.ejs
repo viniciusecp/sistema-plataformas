@@ -15,40 +15,29 @@
 
     <link rel="shortcut icon" href="images/favicon-icon.png" />
 
-    <title>Adicionar Empresa</title>
+    <title>Plataformas</title>
 
     <script>
     $( document ).ready(function() {
 
-        $('#btn_cadastrar').click( function() {
-            var nome = $('#nome').val();
+        $('.btn_excluir_plataforma').click( function(){
+            var _id = $(this).val();
 
             $.ajax({
-                url: '/empresa/salvar',
+                url: '/plataforma/deletar',
                 method: 'post',
                 data: {
-                    nome: nome,
+                    _id: _id
                 },
                 success: function(data){
                     var html = '';
-                    if (data.status == 'Inclusão realizada com sucesso') {
+                    if (data.status == 'Deletado com sucesso') {
                         html += '<div class="alert alert-success">';
-                            html += '<strong>Inclusão realizada com sucesso!</strong>';
+                            html += '<strong>Remoção realizada com sucesso!</strong>';
                         html += '</div>';
                         setTimeout(function(){
                             window.location.href = "/";
                         }, 2500);
-                    }
-                    if (data.status == 'Erro de validacao') {
-                        html += '<div class="alert alert-danger alert-dismissible" role="alert">';
-                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
-                            html += '<strong>Atenção!</strong>';
-                            html += '<ul>';
-                            for(var i = 0; i < data.erros.length; i++) {
-								html += '<li>'+ data.erros[i].msg +'</li>';
-							}
-							html += '</ul>';
-                        html += '</div>';
                     }
                     if (data.status == 'Usuário precisa estar conectado para acessar essa área!') {
                         html += '<div class="alert alert-danger alert-dismissible" role="alert">';
@@ -57,17 +46,17 @@
                         html += '</div>';
                     }
                     if (data.status == 'erro') {
-                        html += '<div class="alert alert-danger">';
+                        html += '<div class="alert alert-success alert-dismissible" role="alert">';
                             html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
-                            html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
+                            html += '<strong>Houve algum erro ao tentar remover!</strong>';
                         html += '</div>';
                     }
-
                     $('#msg').html(html);
                 }
             }); // fim ajax
 
         });
+
 
     });
     </script>
@@ -101,19 +90,40 @@
         <div id="msg"></div>
 
         <div class="page-header">
-   			<h1>Adicionar nova Empresa</h1>
+   			<h1>Plataformas Cadastradas</h1>
    		</div>
+
         <div class="row">
             <div class="col-md-12">
-                <form id="form_cadastro_empresa">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead >
+                            <tr>
+                                <th>Nome</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpo_tabela">
+                            <!-- Inserir conteudo tabela -->
+                            <% if(plataformas.length > 0) { %>
+                                <% for(var i = 0; i < plataformas.length; i++) { %>
+                                    <tr>
+                                        <td><%=plataformas[i].plataforma%></td>
+                                        <td>
+                                            <center>
+                                                <button type="button" class="btn btn-danger btn-sm btn_excluir_plataforma" value="<%=plataformas[i]._id%>">
+                                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                                </button>
+                                            </center>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="form-group">
-                        <label for="nome">Nome da empresa:</label>
-                        <input type="text" class="form-control" id="nome" name="nome">
-                    </div>
 
-                    <button type="button" class="btn btn-success btn-block" id="btn_cadastrar">Cadastrar</button>
-                </form>
             </div>
         </div> <!-- /row -->
     </div> <!-- /container -->

@@ -17,7 +17,7 @@ module.exports.formulario_adicionar_horario = function(application, req, res){
 
                 var callbackEmpresas = function(errEmpresas, resultEmpresas){
                     resultEmpresas.toArray( function(errArrayEmpresas, resultArrayEmpresas){
-                        res.render("admin/form_add_horario", {
+                        res.render("admin/horario/form_add_horario", {
                             empresas: resultArrayEmpresas,
                             empresa_usuario: req.session.empresa,
                             plataformas: resultArrayPlataformas,
@@ -30,7 +30,7 @@ module.exports.formulario_adicionar_horario = function(application, req, res){
 
             } else {
                 var empresas = Array( { nome: req.session.empresa} );
-                res.render("admin/form_add_horario", {
+                res.render("admin/horario/form_add_horario", {
                     empresas: empresas,
                     empresa_usuario: req.session.empresa,
                     plataformas: resultArrayPlataformas,

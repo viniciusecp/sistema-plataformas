@@ -1,8 +1,19 @@
 var crypto = require('crypto');
+var ObjectID = require('mongodb').ObjectId;
 
 function UsuariosDAO(connection) {
     this._connection = connection;
 }
+
+UsuariosDAO.prototype.getUsuarios = function(callback) {
+    var dados = {
+        operacao: "consultar",
+        documento: {},
+        collection: "usuarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
 
 UsuariosDAO.prototype.pesquisarExistente = function(usuario, callback) {
     var dados = {
@@ -36,6 +47,16 @@ UsuariosDAO.prototype.autenticar = function(usuario, callback) {
     var dados = {
         operacao: "consultar",
         documento: usuario,
+        collection: "usuarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
+
+UsuariosDAO.prototype.deleteUsuario = function(_id, callback){
+    var dados = {
+        operacao: "deletar",
+        documento: { _id: ObjectID(_id) },
         collection: "usuarios",
         callback: callback
     };

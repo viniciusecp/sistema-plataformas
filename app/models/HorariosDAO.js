@@ -84,6 +84,16 @@ HorariosDAO.prototype.deleteHorario = function(_id, callback){
     this._connection(dados);
 };
 
+HorariosDAO.prototype.deleteHorariosLote = function(_id, callback){
+    var dados = {
+        operacao: "deletar_multiplos",
+        documento: { id_lote: ObjectID(_id) },
+        collection: "horarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
+
 module.exports = function() {
     return HorariosDAO;
 };

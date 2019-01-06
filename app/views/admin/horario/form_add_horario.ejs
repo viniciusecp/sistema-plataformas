@@ -47,6 +47,17 @@
                             window.location.href = "/";
                         }, 2500);
                     }
+                    if (data.status == 'Erro de validacao') {
+                        html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Atenção!</strong>';
+                            html += '<ul>';
+                            for(var i = 0; i < data.erros.length; i++) {
+								html += '<li>'+ data.erros[i].msg +'</li>';
+							}
+							html += '</ul>';
+                        html += '</div>';
+                    }
                     if (data.status == 'Conflito de horario') {
                         var horarios_cadastrados = data.horarios_cadastrados;
 
@@ -93,7 +104,7 @@
                         html += '</div>';
                     }
                     if (data.status == 'erro') {
-                        html += '<div class="alert alert-success">';
+                        html += '<div class="alert alert-danger">';
                             html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
                         html += '</div>';
                     }
@@ -147,11 +158,6 @@
     <!-- Fim Barra navegação -->
 
     <div class="container">
-        <% if(msg == 'A') { %>
-            <div class="alert alert-danger">
-                <strong>Operação inválida, verifique se todos os campos foram preenchidos!</strong>
-            </div>
-        <% } %>
 
         <div id="msg"></div>
 
@@ -169,9 +175,9 @@
                             <% if(empresas.length > 0) { %>
                                 <% for(var i = 0; i < empresas.length; i++) { %>
                                     <% if(empresa_usuario == empresas[i].nome) { %>
-                                        <option value=<%=empresas[i].nome%> selected ><%=empresas[i].nome%></option>
+                                        <option value="<%=empresas[i].nome%>" selected ><%=empresas[i].nome%></option>
                                     <% } else { %>
-                                        <option value=<%=empresas[i].nome%> ><%=empresas[i].nome%></option>
+                                        <option value="<%=empresas[i].nome%>" ><%=empresas[i].nome%></option>
                                     <% } %>
                                 <% } %>
                             <% } %>

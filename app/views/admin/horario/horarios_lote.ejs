@@ -15,19 +15,21 @@
 
     <link rel="shortcut icon" href="images/favicon-icon.png" />
 
-    <title>Empresas</title>
+    <title>Horários Lote</title>
 
     <script>
     $( document ).ready(function() {
 
-        $('.btn_excluir_empresa').click( function(){
+        $('.btn_excluir_horario_lote').click( function(){
             var _id = $(this).val();
+            var criador = $(this).data('usuario_criacao');
 
             $.ajax({
-                url: '/empresa/deletar',
+                url: '/horario_lote/deletar',
                 method: 'post',
                 data: {
-                    _id: _id
+                    _id: _id,
+                    criador: criador
                 },
                 success: function(data){
                     var html = '';
@@ -43,6 +45,12 @@
                         html += '<div class="alert alert-danger alert-dismissible" role="alert">';
                             html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                             html += '<strong>Usuário precisa estar conectado para executar essa ação!</strong>';
+                        html += '</div>';
+                    }
+                    if (data.status == 'So usuario administrador ou criador') {
+                        html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                            html += '<strong>Usuário comum só pode deletar suas próprias criações!</strong>';
                         html += '</div>';
                     }
                     if (data.status == 'erro') {
@@ -90,7 +98,7 @@
         <div id="msg"></div>
 
         <div class="page-header">
-   			<h1>Empresas Cadastradas</h1>
+   			<h1>Horários Lote Cadastrados</h1>
    		</div>
 
         <div class="row">
@@ -99,19 +107,29 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead >
                             <tr>
-                                <th>Nome</th>
+                                <th>Empresa</th>
+                                <th>Rota</th>
+                                <th>Plataforma</th>
+                                <th>Criador</th>
+                                <th>Horário Início</th>
+                                <th>Horário Fim</th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
                         <tbody id="corpo_tabela">
                             <!-- Inserir conteudo tabela -->
-                            <% if(empresas.length > 0) { %>
-                                <% for(var i = 0; i < empresas.length; i++) { %>
+                            <% if(horarios_lote.length > 0) { %>
+                                <% for(var i = 0; i < horarios_lote.length; i++) { %>
                                     <tr>
-                                        <td><%=empresas[i].nome%></td>
+                                        <td><%=horarios_lote[i].empresa%></td>
+                                        <td><%=horarios_lote[i].rota%></td>
+                                        <td><%=horarios_lote[i].plataforma%></td>
+                                        <td><%=horarios_lote[i].usuario_criacao%></td>
+                                        <td><%=horarios_lote[i].horario_inicio%></td>
+                                        <td><%=horarios_lote[i].horario_final%></td>
                                         <td>
                                             <center>
-                                                <button type="button" class="btn btn-danger btn-sm btn_excluir_empresa" value="<%=empresas[i]._id%>">
+                                                <button type="button" class="btn btn-danger btn-sm btn_excluir_horario_lote" value="<%=horarios_lote[i]._id%>" data-usuario_criacao="<%=horarios_lote[i].usuario_criacao%>">
                                                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                                 </button>
                                             </center>

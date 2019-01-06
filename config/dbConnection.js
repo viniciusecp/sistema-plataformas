@@ -45,6 +45,9 @@ function query(db, dados) {
         case "deletar":
             collection.deleteOne(dados.documento, dados.callback);
             break;
+        case "deletar_multiplos":
+            collection.deleteMany(dados.documento, dados.callback);
+            break;
         default:
             break;
     }

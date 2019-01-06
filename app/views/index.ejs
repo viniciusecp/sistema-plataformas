@@ -92,7 +92,7 @@
                                 html += '<td>'+arrayHorarios[i].plataforma+'</td>';
                                 html += '<td>'+arrayHorarios[i].usuario_criacao+'</td>';
                                 html += '<td>';
-                                    html += '<center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="'+arrayHorarios[i]._id+'">';
+                                    html += '<center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="'+arrayHorarios[i]._id+'" data-usuario_criacao="'+arrayHorarios[i].usuario_criacao+'">';
                                         html += '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
                                     html += '</button></center>';
                                 html += '</td>';
@@ -108,7 +108,8 @@
 
                         $('.btn_excluir_horario').click( function(){
                             var _id = $(this).val();
-                            deleteHorario(_id);
+                            var criador = $(this).data('usuario_criacao');
+                            deleteHorario(_id, criador);
                         });
 
                     },
@@ -125,7 +126,8 @@
 
             $('.btn_excluir_horario').click( function(){
                 var _id = $(this).val();
-                deleteHorario(_id);
+                var criador = $(this).data('usuario_criacao');
+                deleteHorario(_id, criador);
             });
 
             $('#btn_entrar').click( function(){
@@ -193,12 +195,13 @@
                 return day + '/' + month + '/' + year + ', ' + hour + ':' + min;;
             }
 
-            function deleteHorario(_id){
+            function deleteHorario(_id, criador){
                 $.ajax({
                     url: '/horario/deletar',
                     method: 'post',
                     data: {
-                        _id: _id
+                        _id: _id,
+                        criador: criador
                     },
                     success: function(data){
                         var html = '';
@@ -214,6 +217,12 @@
                             html += '<div class="alert alert-danger alert-dismissible" role="alert">';
                                 html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                                 html += '<strong>Usuário precisa estar conectado para executar essa ação!</strong>';
+                            html += '</div>';
+                        }
+                        if (data.status == 'So usuario administrador ou criador') {
+                            html += '<div class="alert alert-danger alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                                html += '<strong>Usuário comum só pode deletar suas próprias criações!</strong>';
                             html += '</div>';
                         }
                         if (data.status == 'erro') {
@@ -262,6 +271,7 @@
                         Horarios <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
+                        <li> <a href="/horarios_lote">Horários Lote</a> </li>
                         <li> <a href="/form_add_horario">Cadastrar Horarios</a> </li>
                     </ul>
                 </li>
@@ -381,7 +391,7 @@
                                         <td><%=horarios[i].plataforma%></td>
                                         <td><%=horarios[i].usuario_criacao%></td>
                                         <td>
-                                            <center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="<%=horarios[i]._id%>">
+                                            <center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="<%=horarios[i]._id%>" data-usuario_criacao="<%=horarios[i].usuario_criacao%>">
                                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                             </button></center>
                                         </td>

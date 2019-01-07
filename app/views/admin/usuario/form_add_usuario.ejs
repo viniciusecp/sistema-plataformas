@@ -87,9 +87,15 @@
                             html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
                         html += '</div>';
                     }
-
-
                     $('#msg').html(html);
+                },
+                beforeSend: function(){
+                    $('#form_cadastro_usuario').css({display:"none"});
+                    $('#img_loader').css({display:"block"});
+                },
+                complete: function(){
+                    $('#img_loader').css({display:"none"});
+                    $('#form_cadastro_usuario').css({display:"block"});
                 }
             }); // fim ajax
 
@@ -175,6 +181,7 @@
                     <br /><br />
                     <button type="button" class="btn btn-success btn-block" id="btn_cadastrar">Cadastrar</button>
                 </form>
+                <center><img src="images/loader.gif" class="img-responsive" style="display: none" id="img_loader"></center>
             </div>
         </div> <!-- /row -->
     </div> <!-- /container -->

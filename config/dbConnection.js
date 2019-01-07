@@ -1,7 +1,7 @@
 var mongo = require("mongodb").MongoClient;
 var assert = require("assert");
 
-const cloud = true;
+const cloud = false;
 
 var mongodbHost = 'localhost';
 var mongodbPort = '27017';

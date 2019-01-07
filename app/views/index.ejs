@@ -73,7 +73,7 @@
 
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
 
-                            var cloud = true;
+                            var cloud = false;
                             if(cloud){
                                 var offset = arrayHorarios[i].horario.getTimezoneOffset();
                                 arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
@@ -114,10 +114,11 @@
 
                     },
                     beforeSend: function(){
+                        $('#tabela_completa').css({display:"none"});
                         $('#img_loader').css({display:"block"});
-                        $('#corpo_tabela').html('');
                     },
                     complete: function(){
+                        $('#tabela_completa').css({display:"block"});
                         $('#img_loader').css({display:"none"});
                     }
                 }); // fim do ajax
@@ -232,6 +233,14 @@
                             html += '</div>';
                         }
                         $('#msg').html(html);
+                    },
+                    beforeSend: function(){
+                        $('#tabela_completa').css({display:"none"});
+                        $('#img_loader').css({display:"block"});
+                    },
+                    complete: function(){
+                        $('#img_loader').css({display:"none"});
+                        $('#tabela_completa').css({display:"block"});
                     }
                 }); // fim ajax
             }
@@ -314,9 +323,6 @@
                     <ul class="dropdown-menu">
                         <% if(usuarioAutenticado == false){ %>
                         <li id="li_form_entrar">
-                        <% } else { %>
-                        <li id="li_form_entrar" style="display:none">
-                        <% } %>
                             <div class="col-sm-12">
                                 <form class="navbar-form">
                        				<div class="form-group">
@@ -329,13 +335,11 @@
                                 </form>
                    			</div>
                         </li>
-                        <% if(usuarioAutenticado == true){ %>
-                        <li id="li_btn_sair">
                         <% } else { %>
-                        <li id="li_btn_sair" style="display:none">
-                        <% } %>
+                        <li id="li_btn_sair">
                             <a href="/sair">Sair</a>
                         </li>
+                        <% } %>
                     </ul>
                 </li>
             </ul>
@@ -362,7 +366,7 @@
 
         <div class="row">
             <div class="col-md-12">
-                <div class="table-responsive">
+                <div class="table-responsive" id="tabela_completa">
                     <table class="table table-striped table-bordered table-hover">
                         <thead >
                             <tr>
@@ -401,7 +405,7 @@
                         </tbody>
                     </table>
                 </div>
-                <center><img src="images/loader.gif" style="display: none" id="img_loader"></center>
+                <center><img src="images/loader.gif" class="img-responsive" style="display: none" id="img_loader"></center>
 
             </div>
         </div> <!-- /row -->

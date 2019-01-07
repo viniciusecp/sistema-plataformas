@@ -62,8 +62,15 @@
                             html += '<strong>Houve algum erro ao tentar cadastrar!</strong>';
                         html += '</div>';
                     }
-
                     $('#msg').html(html);
+                },
+                beforeSend: function(){
+                    $('#form_cadastro_plataforma').css({display:"none"});
+                    $('#img_loader').css({display:"block"});
+                },
+                complete: function(){
+                    $('#img_loader').css({display:"none"});
+                    $('#form_cadastro_plataforma').css({display:"block"});
                 }
             }); // fim ajax
 
@@ -105,7 +112,7 @@
    		</div>
         <div class="row">
             <div class="col-md-12">
-                <form id="form_cadastro_empresa">
+                <form id="form_cadastro_plataforma">
 
                     <div class="form-group">
                         <label for="nome">Nome da plataforma:</label>
@@ -114,6 +121,8 @@
 
                     <button type="button" class="btn btn-success btn-block" id="btn_cadastrar">Cadastrar</button>
                 </form>
+                <center><img src="images/loader.gif" class="img-responsive" style="display: none" id="img_loader"></center>
+
             </div>
         </div> <!-- /row -->
     </div> <!-- /container -->

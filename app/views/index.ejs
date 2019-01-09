@@ -83,7 +83,7 @@
                             console.log(arrayHorarios[i].horario);
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
 
-                            var cloud = false;
+                            var cloud = true;
                             if(cloud){
                                 var offset = arrayHorarios[i].horario.getTimezoneOffset();
                                 arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
@@ -99,9 +99,9 @@
                                 html += '<td>'+arrayHorarios[i].rota+'</td>';
                                 html += '<td>'+arrayHorarios[i].tipo+'</td>';
                                 html += '<td>'+ formatDate(arrayHorarios[i].horario) +'</td>';
-                                console.log(arrayHorarios[i].horario);
-                                console.log(formatDate(arrayHorarios[i].horario));
-                                console.log(moment(arrayHorarios[i].horario).format('DD/MM/YYYY HH:mm'));
+                                //console.log(arrayHorarios[i].horario);
+                                //console.log(formatDate(arrayHorarios[i].horario));
+                                //console.log(moment(arrayHorarios[i].horario).format('DD/MM/YYYY HH:mm'));
                                 //html += '<td>'+ arrayHorarios[i].horario.format('DD/MM/YYYY HH:mm') +'</td>';
                                 html += '<td>'+arrayHorarios[i].plataforma+'</td>';
                                 html += '<td>'+arrayHorarios[i].usuario_criacao+'</td>';
@@ -345,7 +345,7 @@
                 }); // fim do ajax
             }
 
-            iniciaCalendario();
+            //iniciaCalendario();
 
         });
     </script>

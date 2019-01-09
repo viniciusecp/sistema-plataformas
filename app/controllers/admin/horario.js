@@ -125,6 +125,14 @@ module.exports.horario_salvar = function(application, req, res){
 function salvar_documento(dadosForm, res, HorariosDAO, application){
     var docs = [];
 
+    var callback = function(err, result) {
+        if(err){
+            res.json({'status' : 'erro'});
+        } else {
+            res.json({'status' : 'Inclusão realizada com sucesso'});
+        }
+    };
+
     if (dadosForm.tipo == 'Normal') {
         var qnt_insercoes = dadosForm.qnt_insercoes;
         delete dadosForm['qnt_insercoes'];
@@ -171,14 +179,6 @@ function salvar_documento(dadosForm, res, HorariosDAO, application){
         docs.push(dadosForm);
         HorariosDAO.insertHorario(docs, callback);
     }
-
-    var callback = function(err, result) {
-        if(err){
-            res.json({'status' : 'erro'});
-        } else {
-            res.json({'status' : 'Inclusão realizada com sucesso'});
-        }
-    };
 }
 
 module.exports.horario_deletar = function(application, req, res){

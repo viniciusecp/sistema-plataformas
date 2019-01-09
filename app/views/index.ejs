@@ -7,10 +7,19 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Bootstrap JS -->
+    <!-- JavaScript -->
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+
+    <!-- FullCalendar -->
+    <link href='css/fullcalendar.min.css' rel='stylesheet' />
+    <link href='css/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+    <script src='js/moment.min.js'></script>
+    <script src='js/fullcalendar.min.js'></script>
+    <script src='locale/pt-br.js'></script>
+
+    <!-- CSS personalizado -->
+    <link href='css/estilo.css' rel='stylesheet' />
 
     <link rel="shortcut icon" href="images/favicon-icon.png" />
 
@@ -71,9 +80,10 @@
                         html = '';
                         for(var i = 0; i < arrayHorarios.length; i++ ){
 
+                            console.log(arrayHorarios[i].horario);
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
 
-                            var cloud = true;
+                            var cloud = false;
                             if(cloud){
                                 var offset = arrayHorarios[i].horario.getTimezoneOffset();
                                 arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
@@ -89,6 +99,10 @@
                                 html += '<td>'+arrayHorarios[i].rota+'</td>';
                                 html += '<td>'+arrayHorarios[i].tipo+'</td>';
                                 html += '<td>'+ formatDate(arrayHorarios[i].horario) +'</td>';
+                                console.log(arrayHorarios[i].horario);
+                                console.log(formatDate(arrayHorarios[i].horario));
+                                console.log(moment(arrayHorarios[i].horario).format('DD/MM/YYYY HH:mm'));
+                                //html += '<td>'+ arrayHorarios[i].horario.format('DD/MM/YYYY HH:mm') +'</td>';
                                 html += '<td>'+arrayHorarios[i].plataforma+'</td>';
                                 html += '<td>'+arrayHorarios[i].usuario_criacao+'</td>';
                                 html += '<td>';
@@ -171,9 +185,9 @@
 
                             $('#nome_usuario').html(data.nome_completo);
 
+                            $('#li_dropdown_entrar').removeClass("open");
                             $('#li_form_entrar').css({display:"none"});
                             $('#li_btn_sair').css({display:"block"});
-                            $('#li_dropdown_entrar').removeClass("open");
                         }
                         $('#msg').html(html);
                     }
@@ -245,11 +259,99 @@
                 }); // fim ajax
             }
 
+            function iniciaCalendario(){
+                $.ajax({
+                    url: '/calendar',
+                    method: 'get',
+                    success: function(data){
+                        if (data.status == 'erro') {
+                            html += '<div class="alert alert-success alert-dismissible" role="alert">';
+                                html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                                html += '<strong>Houve algum erro ao tentar remover!</strong>';
+                            html += '</div>';
+                        }
+
+                        var arrayHorarios = data.horarios;
+
+                        var arrayCalendar = [];
+                        for(var i = 0; i < arrayHorarios.length; i++ ){
+
+                            arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
+
+                            var cloud = false;
+                            if(cloud){
+                                var offset = arrayHorarios[i].horario.getTimezoneOffset();
+                                arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
+                                arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
+                            }
+
+                            //arrayHorarios[i].horario_termino = new Date(arrayHorarios[i].horario.getTime() + 900000);
+
+                            arrayHorarios[i].color = '#1C1C1C';
+                            if (arrayHorarios[i].tipo == 'Extra') arrayHorarios[i].color = '#4169E1';
+
+                            var json = {
+                                _id: arrayHorarios[i]._id,
+                                title: arrayHorarios[i].rota + ' - Plataforma: ' + arrayHorarios[i].plataforma,
+                                start: arrayHorarios[i].horario,
+                                //end: arrayHorarios[i].horario_termino,
+                                color: arrayHorarios[i].color,
+                                empresa: arrayHorarios[i].empresa,
+                                rota: arrayHorarios[i].rota,
+                                tipo: arrayHorarios[i].tipo,
+                                plataforma: arrayHorarios[i].plataforma,
+                                criador: arrayHorarios[i].usuario_criacao
+                            };
+                            arrayCalendar.push(json);
+
+                        } // fim do for
+
+                        $('#calendar').fullCalendar({
+                            header: {
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'month,agendaWeek,agendaDay,listWeek'
+                            },
+                            defaultDate: Date(),
+                            navLinks: true, // can click day/week names to navigate views
+                            editable: true,
+                            eventLimit: true, // allow "more" link when too many events
+                            events: arrayCalendar,
+                            eventClick: function(event) {
+                                $('#detalhes_modal #empresa').text(event.empresa);
+                                $('#detalhes_modal #rota').text(event.rota);
+                                $('#detalhes_modal #tipo').text(event.tipo);
+                                $('#detalhes_modal #horario').text(formatDate(event.start));
+                                $('#detalhes_modal #plataforma').text(event.plataforma);
+                                $('#detalhes_modal #criador').text(event.criador);
+                                $('#detalhes_modal .btn_excluir_horario').val(event._id);
+                                $('#detalhes_modal').modal('show');
+                                return false;
+                            },
+                            selectable: true,
+                            selectHelper: true,
+                            select: function(start){
+                                var horario = moment(start).format('YYYY-MM-DD HH:mm').replace(' ', 'T');
+                                window.location.href = "/form_add_horario?horario=" + horario;
+                            }
+                        });
+                    },
+                    beforeSend: function(){
+                        $('#img_loader_calendar').css({display:"block"});
+                    },
+                    complete: function(){
+                        $('#img_loader_calendar').css({display:"none"});
+                    }
+                }); // fim do ajax
+            }
+
+            iniciaCalendario();
 
         });
     </script>
 </head>
 <body>
+
     <!-- Barra navegação -->
     <nav class="navbar navbar-inverse">
         <div class="container">
@@ -335,6 +437,9 @@
                                 </form>
                    			</div>
                         </li>
+                        <li id="li_btn_sair" style="display:none">
+                            <a href="/sair">Sair</a>
+                        </li>
                         <% } else { %>
                         <li id="li_btn_sair">
                             <a href="/sair">Sair</a>
@@ -356,6 +461,12 @@
                 <strong><%= msg %></strong>
             </div>
         <% } %>
+        </div>
+
+        <div id='calendar'>
+            <center>
+                <img src="images/loader.gif" class="img-responsive" style="display: none" id="img_loader_calendar">
+            </center>
         </div>
 
         <div id="msg_poltronas_livres"></div>
@@ -410,6 +521,45 @@
             </div>
         </div> <!-- /row -->
     </div> <!-- /container -->
+
+    <!-- Modal Detalhes -->
+    <div class="modal fade" id="detalhes_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center">Detalhes do evento</h4>
+                </div>
+                <div class="modal-body">
+                    <dl class="dl-horizontal">
+                        <dt>Empresa:</dt>
+                            <dd id="empresa"></dd>
+                        <dt>Rota:</dt>
+                            <dd id="rota"></dd>
+                        <dt>Tipo:</dt>
+                            <dd id="tipo"></dd>
+                        <dt>Horario:</dt>
+                            <dd id="horario"></dd>
+                        <dt>Plataforma:</dt>
+                            <dd id="plataforma"></dd>
+                        <dt>Criador:</dt>
+                            <dd id="criador"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-danger btn_excluir_horario" id="btn_excluir" data-dismiss="modal">Excluir</button>
+                    <script>
+                        $('#detalhes_modal').on('shown.bs.modal', function (e) {
+                            var criador = $('#criador').html();
+                            document.getElementById('btn_excluir').setAttribute('data-usuario_criacao', criador);
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal -->
 
 </body>
 </html>

@@ -8,15 +8,13 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Bootstrap JS -->
+    <!-- JavaScript -->
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 
     <link rel="shortcut icon" href="images/favicon-icon.png" />
 
     <title>Adicionar Horário</title>
-
 
     <script>
     $( document ).ready(function() {
@@ -77,7 +75,7 @@
 
                                     horarios_cadastrados[i].horario = new Date(horarios_cadastrados[i].horario);
 
-                                    var cloud = true;
+                                    var cloud = false;
                                     if(cloud){
                                         var offset = horarios_cadastrados[i].horario.getTimezoneOffset();
                                         horarios_cadastrados[i].horario = horarios_cadastrados[i].horario.getTime() + (offset * 60000);

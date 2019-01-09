@@ -7,6 +7,10 @@ module.exports = function(application) {
         application.app.controllers.index.index(application, req, res);
     });
 
+    application.get('/calendar', function(req, res){
+        application.app.controllers.index.calendar(application, req, res);
+    });
+
     application.post('/horario/pesquisar', function(req, res){
         application.app.controllers.index.horario_pesquisar(application, req, res);
     });

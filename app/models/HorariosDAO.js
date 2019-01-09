@@ -4,6 +4,16 @@ function HorariosDAO(connection) {
     this._connection = connection;
 }
 
+HorariosDAO.prototype.getHorarios = function(callback) {
+    var dados = {
+        operacao: "consultar",
+        documento: {},
+        collection: "horarios",
+        callback: callback
+    };
+    this._connection(dados);
+};
+
 HorariosDAO.prototype.get10UltimosHorarios = function(callback) {
     var dados = {
         operacao: "get10UltimosHorarios",

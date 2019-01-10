@@ -1,5 +1,6 @@
 var ObjectID = require('mongodb').ObjectId;
 var dateFormat = require('dateformat');
+var moment = require('moment');
 
 module.exports.formulario_adicionar_horario = function(application, req, res){
     if (req.session.autorizado !== true) { res.redirect("/index?msg=Usuário precisa estar conectado para acessar essa área!");  return; }
@@ -99,18 +100,14 @@ module.exports.horario_salvar = function(application, req, res){
         var intervaloInferiorArray = [];
 
         for (var i = 0; i < qnt_insercoes; i++) {
-            var dados = JSON.parse(JSON.stringify(dadosForm));
-            dados.intervaloSuperior = new Date(dados.intervaloSuperior);
-            dados.intervaloInferior = new Date(dados.intervaloInferior);
+            var dados = JSON.parse(JSON.stringify(dadosForm));              // cria novo objeto
+            dados.intervaloSuperior = new Date(dados.intervaloSuperior);    // tranforma em objeto tipo date
+            dados.intervaloInferior = new Date(dados.intervaloInferior);    // tranforma em objeto tipo date
             intervaloSuperiorArray.push(dados.intervaloSuperior);
             intervaloInferiorArray.push(dados.intervaloInferior);
 
-            var proxintervaloSuperior = dadosForm.intervaloSuperior.getTime()+86400000;
-            var proxintervaloInferior = dadosForm.intervaloInferior.getTime()+86400000;
-            var newDateSuperior = new Date(proxintervaloSuperior);
-            var newDateInferior = new Date(proxintervaloInferior);
-            dadosForm.intervaloSuperior = newDateSuperior;
-            dadosForm.intervaloInferior = newDateInferior;
+            dadosForm.intervaloSuperior.setDate(dados.intervaloSuperior.getDate() + 1);
+            dadosForm.intervaloInferior.setDate(dados.intervaloInferior.getDate() + 1);
         }
 
         dadosForm.intervaloSuperior = intervaloSuperiorArray;
@@ -138,13 +135,11 @@ function salvar_documento(dadosForm, res, HorariosDAO, application){
         delete dadosForm['qnt_insercoes'];
 
         for (var i = 0; i < qnt_insercoes; i++) {
-            var dados = JSON.parse(JSON.stringify(dadosForm));
-            dados.horario = new Date(dados.horario);
+            var dados = JSON.parse(JSON.stringify(dadosForm));  // cria novo objeto
+            dados.horario =  new Date(dados.horario);   // tranforma em objeto tipo date
             docs.push(dados);
 
-            var proxDia = dadosForm.horario.getTime()+86400000;
-            var newDate = new Date(proxDia);
-            dadosForm.horario = newDate;
+            dadosForm.horario.setDate(dados.horario.getDate() + 1);
         }
 
         // Gerar documento referente a esta inserção em lote e capturar o id

@@ -83,7 +83,7 @@
                             console.log(arrayHorarios[i].horario);
                             arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
 
-                            var cloud = true;
+                            var cloud = false;
                             if(cloud){
                                 var offset = arrayHorarios[i].horario.getTimezoneOffset();
                                 arrayHorarios[i].horario = arrayHorarios[i].horario.getTime() + (offset * 60000);
@@ -345,7 +345,7 @@
                 }); // fim do ajax
             }
 
-            //iniciaCalendario();
+            iniciaCalendario();
 
         });
     </script>

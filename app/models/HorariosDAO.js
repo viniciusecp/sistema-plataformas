@@ -4,23 +4,26 @@ function HorariosDAO(connection) {
     this._connection = connection;
 }
 
-HorariosDAO.prototype.getHorarios = function(callback) {
-    var dados = {
-        operacao: "consultar",
-        documento: {},
-        collection: "horarios",
-        callback: callback
-    };
-    this._connection(dados);
-};
-
 HorariosDAO.prototype.get10UltimosHorarios = function(callback) {
     var dados = {
-        operacao: "get10UltimosHorarios",
+        operacao: "getNHorarios",
         documento: {},
         collection: "horarios",
         callback: callback,
         options: { 'limit' : 10, 'sort' : [['_id', -1]] }
+    };
+    this._connection(dados);
+};
+
+HorariosDAO.prototype.getHorariosCalendar = function(dados, callback) {
+    var dados = {
+        operacao: "getNHorarios",
+        documento: {
+            horario: {$gt: dados.intervaloInferior, $lt: dados.intervaloSuperior}
+        },
+        collection: "horarios",
+        callback: callback,
+        options: { 'limit' : 100, 'sort' : [['_id', -1]] }
     };
     this._connection(dados);
 };

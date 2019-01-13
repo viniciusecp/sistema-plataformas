@@ -1,7 +1,7 @@
 var mongo = require("mongodb").MongoClient;
 var assert = require("assert");
 
-const cloud = false;
+const cloud = true;
 
 var mongodbHost = 'localhost';
 var mongodbPort = '27017';
@@ -36,7 +36,7 @@ function query(db, dados) {
         case "consultar":
             collection.find(dados.documento, dados.callback);
             break;
-        case "get10UltimosHorarios":
+        case "getNHorarios":
             collection.find(dados.documento, dados.options, dados.callback);
             break;
         case "atualizar":

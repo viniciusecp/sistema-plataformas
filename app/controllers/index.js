@@ -34,23 +34,23 @@ module.exports.calendar = function(application, req, res){
     var connection = application.config.dbConnection;
     var HorariosDAO = new application.app.models.HorariosDAO(connection);
 
+    var intervaloInferior = new Date();   // busca a partir do dia atual
+    intervaloInferior.setHours(0,0,0,0);
+    var intervaloSuperior = new Date(new Date().setDate(new Date().getDate() + 2));
+    var dados = { intervaloSuperior: intervaloSuperior, intervaloInferior: intervaloInferior};
+
     var callback = function(err, result) {
         result.toArray( function(errArray, resultArray){
-
-            //for (var i = 0; i < resultArray.length; i++){
-                //resultArray[i].horario = dateFormat(resultArray[i].horario, "dd/mm/yyyy, HH:MM");
-            //}
 
             if (errArray) {
                 res.json({'status' : 'erro'});
             } else {
-                //console.log(resultArray);
                 res.json({ horarios: resultArray});
             }
 
         });
     }
-    HorariosDAO.getHorarios(callback);
+    HorariosDAO.getHorariosCalendar(dados, callback);
 }
 
 module.exports.horario_pesquisar = function(application, req, res){

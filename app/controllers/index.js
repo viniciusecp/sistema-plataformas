@@ -155,6 +155,9 @@ function getPlataformas(json){
 }
 
 function getPlataformasLivres(todasPlataformas, plataformasOcupadas){
+    // ordenar para indeces ficarem nos seus lugares "corretos"
+    plataformasOcupadas.sort(function(a,b) { return a - b; });
+
     var indexPlataformasOcupadas = [];
     for(var i = 0; i < plataformasOcupadas.length; i++){
         for (var j = 0; j < todasPlataformas.length; j++) {

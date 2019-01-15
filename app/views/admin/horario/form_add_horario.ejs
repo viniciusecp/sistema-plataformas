@@ -82,7 +82,7 @@
 
                                     horarios_cadastrados[i].horario = new Date(horarios_cadastrados[i].horario);
 
-                                    var cloud = false;
+                                    var cloud = true;
                                     if(cloud){
                                         var offset = horarios_cadastrados[i].horario.getTimezoneOffset();
                                         horarios_cadastrados[i].horario = horarios_cadastrados[i].horario.getTime() + (offset * 60000);

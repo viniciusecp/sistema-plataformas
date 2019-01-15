@@ -6,7 +6,7 @@ module.exports.formulario_adicionar_horario = function(application, req, res){
     if (req.session.autorizado !== true) { res.redirect("/index?msg=Usuário precisa estar conectado para acessar essa área!");  return; }
 
     var dados_pag_pesquisa = req.query;
-
+    
     var msg = '';
     if(req.query.msg != '') msg = req.query.msg;
 
@@ -67,7 +67,7 @@ module.exports.horario_salvar = function(application, req, res){
         return;
     }
 
-    dadosForm.horario = new Date(dadosForm.horario);
+    dadosForm.horario = new Date(formatarData(dadosForm.horario));
     dadosForm.usuario_criacao = req.session.usuario;
 
     var connection = application.config.dbConnection;
@@ -174,6 +174,15 @@ function salvar_documento(dadosForm, res, HorariosDAO, application){
         docs.push(dadosForm);
         HorariosDAO.insertHorario(docs, callback);
     }
+}
+
+function formatarData(datetime){
+    // por no formato yyyy/mm/dd HH:mm
+    var dia = datetime.split('/')[0];
+    var mes = datetime.split('/')[1];
+    var ano = datetime.split('/')[2].split(' ')[0];
+    var horario = datetime.split(' ')[1];
+    return (ano + '-' + mes + '-' + dia + ' ' + horario);
 }
 
 module.exports.horario_deletar = function(application, req, res){

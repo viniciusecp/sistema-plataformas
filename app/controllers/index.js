@@ -64,7 +64,7 @@ module.exports.horario_pesquisar = function(application, req, res){
         return;
     }
 
-    dadosForm.horario = new Date(dadosForm.horario);
+    dadosForm.horario = new Date(formatarData(dadosForm.horario));
 
     var intervaloSuperior = new Date(dadosForm.horario.getTime()+1800000); // verificar 30 minutos antes e depois
     var intervaloInferior = new Date(dadosForm.horario.getTime()-1800000);
@@ -167,4 +167,13 @@ function getPlataformasLivres(todasPlataformas, plataformasOcupadas){
         todasPlataformas.splice(indexPlataformasOcupadas[i - 1], 1);
     }
     return todasPlataformas;
+}
+
+function formatarData(datetime){
+    // por no formato yyyy/mm/dd HH:mm
+    var dia = datetime.split('/')[0];
+    var mes = datetime.split('/')[1];
+    var ano = datetime.split('/')[2].split(' ')[0];
+    var horario = datetime.split(' ')[1];
+    return (ano + '-' + mes + '-' + dia + ' ' + horario);
 }

@@ -64,7 +64,7 @@
 
                         var html = '';
 
-                        if(plataformasLivres.length < 0){
+                        if(plataformasLivres.length == 0){
                             html += '<div class="page-header">';
                                 html += '<h1>Não há plataformas disponíveis neste horário!</h1>';
                             html += '</div>';
@@ -81,10 +81,11 @@
                                 }
                             html += '</div>';
                         }
-                        $('#msg_poltronas_livres').html(html);
-                        $('#text_ultimos_horarios').html('Cadastrados neste horário');
 
-                        html = '';
+                        html += '<div class="page-header">';
+                            html += '<h1>Cadastrados neste horário</h1>';
+                        html += '</div>';
+
                         html += '<div class="table-responsive">';
                             html += '<table class="table table-striped table-bordered table-hover">';
                                 html += '<thead >';
@@ -125,11 +126,10 @@
                                 html += '</tbody>';
                             html += '</table>';
                         html += '</div>';
-                        $('#tabela_completa').html(html);
+                        $('#div_pesquisa').html(html);
 
                         $('.btn_plataforma_livre').click(function(){
                             var numero = $(this).html();
-
                             window.location.href = "/form_add_horario?horario="+horario+"&numero="+numero;
                         });
 
@@ -292,8 +292,6 @@
                                 arrayHorarios[i].horario = new Date(arrayHorarios[i].horario);
                             }
 
-                            //arrayHorarios[i].horario_termino = new Date(arrayHorarios[i].horario.getTime() + 900000);
-
                             arrayHorarios[i].color = '#1C1C1C';
                             if (arrayHorarios[i].tipo == 'Extra') arrayHorarios[i].color = '#4169E1';
 
@@ -301,7 +299,6 @@
                                 _id: arrayHorarios[i]._id,
                                 title: arrayHorarios[i].rota + ' - Plataforma: ' + arrayHorarios[i].plataforma,
                                 start: arrayHorarios[i].horario,
-                                //end: arrayHorarios[i].horario_termino,
                                 color: arrayHorarios[i].color,
                                 empresa: arrayHorarios[i].empresa,
                                 rota: arrayHorarios[i].rota,
@@ -339,9 +336,6 @@
                             selectHelper: true,
                             select: function(start){
                                 var horario = moment(start).format('DD/MM/YYYY HH:mm');;
-                                //horario = formatDate(horario);
-
-                                //var horario = moment(start).format('YYYY-MM-DD HH:mm');
                                 window.location.href = "/form_add_horario?horario=" + horario;
                             }
                         });
@@ -377,9 +371,6 @@
             });
 
             iniciaCalendario();
-            $('#tabela_completa').html('');
-            $('#text_ultimos_horarios').html('');
-
         });
     </script>
 </head>
@@ -395,14 +386,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="/" class="navbar-brand">LOGO</a>
+            <a href="/" class="navbar-brand">
+                <img src="images/logo2.jpg">
+            </a>
         </div>
 
         <div class="collapse navbar-collapse" id="barra-navegacao">
             <div class="navbar-form navbar-right">
-                <!--<div class="form-group">
-                    <input type="datetime-local" class="form-control" id="horario" name="horario" required >
-                </div>-->
                 <div class="form-group">
                     <div class="input-group date data_formato" data-date-format="dd/mm/yyyy HH:ii">
                         <input type="text" class="form-control" id="horario" name="horario" readonly >
@@ -509,57 +499,8 @@
             </center>
         </div>
 
-        <div id="msg_poltronas_livres"></div>
+        <div id="div_pesquisa"></div>
 
-        <div class="page-header">
-   			<h1 id="text_ultimos_horarios">Últimos horários cadastrados</h1>
-   		</div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="table-responsive" id="tabela_completa">
-                    <table class="table table-striped table-bordered table-hover">
-                        <thead >
-                            <tr>
-                                <th>Empresa</th>
-                                <th>Rota</th>
-                                <th>Tipo</th>
-                                <th>Horário</th>
-                                <th>Plataforma</th>
-                                <th>Criador</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo_tabela">
-                            <!-- Inserir conteudo tabela -->
-                            <% if(horarios.length > 0) { %>
-        						<% for(var i = 0; i < horarios.length; i++) { %>
-                                    <% if(horarios[i].tipo == 'Extra') { %>
-                                    <tr class="info">
-                                    <% } else { %>
-                                    <tr>
-                                    <% } %>
-                                        <td><%=horarios[i].empresa%></td>
-                                        <td><%=horarios[i].rota%></td>
-                                        <td><%=horarios[i].tipo%></td>
-                                        <td><%=horarios[i].horario%></td>
-                                        <td><%=horarios[i].plataforma%></td>
-                                        <td><%=horarios[i].usuario_criacao%></td>
-                                        <td>
-                                            <center><button type="button" class="btn btn-danger btn-sm btn_excluir_horario" value="<%=horarios[i]._id%>" data-usuario_criacao="<%=horarios[i].usuario_criacao%>">
-                                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                            </button></center>
-                                        </td>
-                                    </tr>
-        						<% } %>
-                			<% } %>
-                        </tbody>
-                    </table>
-                </div>
-                <center><img src="images/loader.gif" class="img-responsive" style="display: none" id="img_loader"></center>
-
-            </div>
-        </div> <!-- /row -->
     </div> <!-- /container -->
 
     <!-- Modal Detalhes -->

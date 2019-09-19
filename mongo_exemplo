@@ -1,0 +1,18 @@
+mongodump --db db1
+for f in dump/db1/*.bson; do bsondump "$f" > "$f.json"; done
+
+###################################################################
+
+use sis_plataformas
+
+db.createCollection("horarios")
+db.horarios.save({ empresa : 'Rotas', rota : 'Uberlândia x São Paulo', tipo : 'normal', horario : ISODate("2019-01-03T20:00:00Z"), plataforma : 14 })
+
+db.createCollection("empresas")
+db.empresas.save({nome: 'Rotas'})
+
+db.createCollection("plataformas")
+db.plataformas.save({plataforma: '11'})
+
+db.createCollection("usuarios")
+db.usuarios.save({ empresa: 'Administrador', nome_completo: 'Administrador', usuario: 'admin', senha: '' })
